@@ -33,7 +33,7 @@ class CityCommentControllerTest {
                 .build();
         cityCommentRepository.save(cityComment);
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/city/{cityName}", "Berlin"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/comment/{cityName}", "Berlin"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().json(
                         """

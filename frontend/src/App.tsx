@@ -26,7 +26,7 @@ function App() {
         <Routes>
             <Route path={"/"} element={<Login />}></Route>
             <Route element={<ProtectedRout user={user}/>}>
-                <Route path={"/search"} element={<CitySearch/>}></Route>
+                <Route path={"/search"} element={<CitySearch user={user}/>}></Route>
             </Route>
         </Routes>
     </>

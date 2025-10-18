@@ -1,5 +1,6 @@
 package org.example.backend.controller;
 
+import jakarta.validation.Valid;
 import org.example.backend.model.CityComment;
 import org.example.backend.service.CityCommentService;
 import org.springframework.web.bind.annotation.*;
@@ -16,8 +17,13 @@ public class CityCommentController {
         this.cityCommentService = cityCommentService;
     }
 
-    @GetMapping("/city/{cityName}")
+    @GetMapping("/comment/{cityName}")
     public List<CityComment> getCommentsByCity(@PathVariable String cityName) {
         return  cityCommentService.allComments(cityName);
+    }
+
+    @PostMapping("/addcomment")
+    public CityComment addComment(@Valid @RequestBody CityComment comment)  {
+        return  cityCommentService.addComment(comment);
     }
 }

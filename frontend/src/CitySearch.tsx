@@ -8,7 +8,11 @@ type CityResult = {
     lon: string;
 };
 
-export default function CitySearch() {
+type ProtectedRoutProps = {
+    user: string |undefined|null
+}
+
+export default function CitySearch(props:Readonly<ProtectedRoutProps>) {
     const [query, setQuery] = useState("");
     const [results, setResults] = useState<CityResult[]>([]);
     const [selectedCity, setSelectedCity] = useState<string | null>(null);
@@ -85,7 +89,7 @@ export default function CitySearch() {
             {selectedCity && (
                 <>
                     <hr />
-                    <CitySummary cityName={selectedCity} />
+                    <CitySummary cityName={selectedCity}  user={props.user} />
                 </>
             )}
         </div>

@@ -14,7 +14,6 @@ public class CityComment {
     private String username;
     private String comment;
     private String imageUrl;
-    private boolean favorite;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }
