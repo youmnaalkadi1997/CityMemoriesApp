@@ -29,6 +29,7 @@ class CityCommentControllerTest {
     @Test
     @WithMockUser
     void getCommentsByCity() throws Exception {
+        cityCommentRepository.deleteAll();
         CityComment cityComment = CityComment.builder().id("1")
                 .comment("Test")
                 .cityName("Berlin")
