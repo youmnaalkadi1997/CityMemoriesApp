@@ -1,11 +1,19 @@
 /* App.css */
 
 /* === Allgemein === */
+#root {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 2rem;
+    width: 100%;
+}
+
 body {
     margin: 0;
     font-family: 'Segoe UI', sans-serif;
     background-color: #f0f0f0;
     color: #2e7d32;
+    padding: 0;
 }
 
 /* === Zentrierung & Container === */

@@ -24,7 +24,6 @@ function App() {
     }, []);
 
   return (
-    <>
         <Routes>
             <Route path={"/"} element={<Login />}></Route>
             <Route element={<ProtectedRout user={user}/>}>
@@ -33,7 +32,7 @@ function App() {
                 <Route path="/delete/:id" element={<DeleteComment />} />
             </Route>
         </Routes>
-    </>
+
   )
 }
 

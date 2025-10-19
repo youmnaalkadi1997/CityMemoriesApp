@@ -67,11 +67,11 @@ export default function CitySearch(props:Readonly<ProtectedRoutProps>) {
 
     return (
         <div className="container city-search">
-            <h2>🌍 Stadt suchen</h2>
+            <h2>Stadt suchen</h2>
 
             <input
                 type="text"
-                placeholder="z. B. Berlin, Paris, Beirut..."
+                placeholder="z. B. Berlin, Paris, Dubai..."
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
             />
@@ -79,13 +79,21 @@ export default function CitySearch(props:Readonly<ProtectedRoutProps>) {
             {isLoading && <p>⏳ Lade Städte...</p>}
 
             <ul>
-                {results.map((city, index) => (
+                {results.map((city) => (
                     <li
-                        key={index}
+                        key={`${city.lat}-${city.lon}`}
                         className="city-list-item"
+                        role="button"
+                        tabIndex={0}
                         onClick={() => {
-                            const cityNameOnly = city.display_name.split(",")[0]; // فقط الاسم الأول
+                            const cityNameOnly = city.display_name.split(",")[0];
                             setSelectedCity(cityNameOnly);
+                        }}
+                        onKeyDown={(e) => {
+                            if (e.key === "Enter" || e.key === " ") {
+                                const cityNameOnly = city.display_name.split(",")[0];
+                                setSelectedCity(cityNameOnly);
+                            }
                         }}
                     >
                         <strong>{city.display_name}</strong>

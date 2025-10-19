@@ -28,8 +28,8 @@ type CityComment = {
 };
 
 type Props = {
-    cityName: string;
-    user: string |undefined|null
+    readonly  cityName: string;
+    readonly  user: string |undefined|null
 };
 
 export default function CitySummary({ cityName, user }: Props) {
@@ -113,7 +113,6 @@ export default function CitySummary({ cityName, user }: Props) {
             )}
 
             <div>
-                <h4>Kommentieren ..</h4>
                 <textarea
                     value={comment}
                     onChange={(e) => setComment(e.target.value)}
@@ -129,7 +128,7 @@ export default function CitySummary({ cityName, user }: Props) {
                 )}
             </div>
             <div>
-                <h4>🗨 Kommentare:</h4>
+                <h4>Kommentare:</h4>
                 {comments.length === 0 ? (
                     <p>Keine Kommentare für diese Stadt.</p>
                 ) : (

@@ -37,7 +37,7 @@ export default function EditComment() {
     }
 
     return (
-        <div className="container" >
+        <div className="container">
             <h2>Kommentare bearbeiten</h2>
             <form onSubmit={updateComment}>
                 <label>
