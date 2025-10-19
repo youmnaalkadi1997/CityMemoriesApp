@@ -76,12 +76,16 @@ export default function CitySummary({ cityName, user }: Props) {
             comment: comment
         })
             .then(() => {
-                setMessage("✅ ");
+                setMessage("✅Kommentar erfolgreich hinzugefügt ");
                 setComment("");
             })
             .catch((error) => {
-                console.error("Error", error);
-                setMessage("❌");
+                if (error.response) {
+                    const serverMessage = error.response.data?.message || "Unbekannter Fehler";
+                    setMessage("❌ " + serverMessage);
+                } else {
+                    setMessage("❌ Netzwerkfehler oder Server nicht erreichbar");
+                }
             });
     };
 

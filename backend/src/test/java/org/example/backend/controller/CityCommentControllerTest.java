@@ -11,6 +11,8 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.http.MediaType;
+
 
 
 @SpringBootTest
@@ -45,6 +47,63 @@ class CityCommentControllerTest {
                                    }
                                    ]
                                  """
+                ));
+    }
+
+    @Test
+    @WithMockUser
+    void addComment() throws Exception {
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/addcomment")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                  {
+                                    "cityName" : "Berlin",
+                                    "username" : "youmna",
+                                    "comment" : "Test"
+                                   }
+                                 """)
+                )
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().json(
+                        """
+                                   {
+                                    "cityName" : "Berlin",
+                                    "username" : "youmna",
+                                    "comment" : "Test"
+                                   }
+                                   """
+                ));
+    }
+
+    @Test
+    @WithMockUser
+    void updateComment() throws Exception {
+        CityComment cityComment = CityComment.builder().id("1")
+                .comment("Test")
+                .cityName("Berlin")
+                .build();
+        cityCommentRepository.save(cityComment);
+
+        mockMvc.perform(MockMvcRequestBuilders.put("/api/comment/{id}" , "1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                  {
+                                    "cityName" : "Berlin",
+                                    "comment" : "Testing"
+                                   }
+                                 """)
+                ).andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().json(
+                        """
+                                 
+                                   {
+                                     "id" : "1",
+                                    "cityName" : "Berlin",
+                                    "comment" : "Testing"
+                                   }
+                                   
+                                   """
                 ));
     }
 }
