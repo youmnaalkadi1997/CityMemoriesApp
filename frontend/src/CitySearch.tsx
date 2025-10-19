@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import CitySummary from "./CitySummary.tsx";
+import {useSearchParams} from "react-router-dom";
 
 type CityResult = {
     display_name: string;
@@ -17,6 +18,8 @@ export default function CitySearch(props:Readonly<ProtectedRoutProps>) {
     const [results, setResults] = useState<CityResult[]>([]);
     const [selectedCity, setSelectedCity] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
+    const [searchParams] = useSearchParams();
+
 
     const fetchCities = (cityName: string) => {
         setIsLoading(true);
@@ -55,8 +58,15 @@ export default function CitySearch(props:Readonly<ProtectedRoutProps>) {
         return () => clearTimeout(delay);
     }, [query]);
 
+    useEffect(() => {
+        const selected = searchParams.get("selected");
+        if (selected) {
+            setSelectedCity(selected);
+        }
+    }, []);
+
     return (
-        <div style={{ maxWidth: "600px", margin: "0 auto" }}>
+        <div className="container city-search">
             <h2>🌍 Stadt suchen</h2>
 
             <input
@@ -64,7 +74,6 @@ export default function CitySearch(props:Readonly<ProtectedRoutProps>) {
                 placeholder="z. B. Berlin, Paris, Beirut..."
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                style={{ width: "100%", padding: "8px", fontSize: "16px" }}
             />
 
             {isLoading && <p>⏳ Lade Städte...</p>}
@@ -73,7 +82,7 @@ export default function CitySearch(props:Readonly<ProtectedRoutProps>) {
                 {results.map((city, index) => (
                     <li
                         key={index}
-                        style={{ margin: "10px 0", cursor: "pointer", color: "blue" }}
+                        className="city-list-item"
                         onClick={() => {
                             const cityNameOnly = city.display_name.split(",")[0]; // فقط الاسم الأول
                             setSelectedCity(cityNameOnly);

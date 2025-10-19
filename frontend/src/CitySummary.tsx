@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import {Link} from "react-router-dom";
 
 type WikiData = {
     title: string;
@@ -44,27 +45,30 @@ export default function CitySummary({ cityName, user }: Props) {
 
         setLoading(true);
 
-        const wikiUrl = `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(cityName)}`;
-        const commentsUrl = `/api/comment/${encodeURIComponent(cityName)}`;
-
-        Promise.all([
-            axios.get(wikiUrl),
-            axios.get(commentsUrl)
-        ])
-            .then(([wikiRes, commentsRes]) => {
-                setData(wikiRes.data);
-                setComments(commentsRes.data);
-            })
-            .catch((error) => {
-                console.error("Fehler beim Laden:", error);
+        axios.get(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(cityName)}`)
+            .then((res) => setData(res.data))
+            .catch((err) => {
+                console.error("Wiki Fehler", err);
                 setData(null);
-                setComments([]);
-            })
-            .finally(() => {
-                setLoading(false);
             });
 
+        axios.get(`/api/comment/${encodeURIComponent(cityName)}`)
+            .then((res) => setComments(res.data))
+            .catch((err) => {
+                console.error("Comment Fehler", err);
+                setComments([]);
+            })
+            .finally(() => setLoading(false));
+
     }, [cityName]);
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setMessage("");
+        }, 3000);
+
+        return () => clearTimeout(timer);
+    }, [message]);
 
     if (loading) return <p>⏳ Lade Beschreibung...</p>;
     if (!data) return <p>❌ Keine Beschreibung gefunden.</p>;
@@ -90,7 +94,7 @@ export default function CitySummary({ cityName, user }: Props) {
     };
 
     return (
-        <div style={{ marginTop: "20px" }}>
+        <div className="city-summary">
             <h3>{data.title}</h3>
 
             {data.thumbnail && (
@@ -100,7 +104,7 @@ export default function CitySummary({ cityName, user }: Props) {
             <p>{data.extract}</p>
 
             {data.content_urls?.desktop.page && (
-                <p style={{ fontSize: "12px", color: "gray" }}>
+                <p>
                     Quelle:{" "}
                     <a href={data.content_urls.desktop.page} target="_blank" rel="noopener noreferrer">
                         Wikipedia – {data.title}
@@ -108,13 +112,12 @@ export default function CitySummary({ cityName, user }: Props) {
                 </p>
             )}
 
-            <div style={{ marginTop: "20px" }}>
+            <div>
                 <h4>Kommentieren ..</h4>
                 <textarea
                     value={comment}
                     onChange={(e) => setComment(e.target.value)}
                     rows={4}
-                    style={{ width: "100%", marginBottom: "10px" }}
                     placeholder="Kommentieren .."
                 />
                 <button onClick={addComment}>Senden</button>
@@ -125,21 +128,31 @@ export default function CitySummary({ cityName, user }: Props) {
                     </p>
                 )}
             </div>
-            <div style={{ marginTop: "30px" }}>
+            <div>
                 <h4>🗨 Kommentare:</h4>
                 {comments.length === 0 ? (
-                    <p style={{ color: "gray" }}>Keine Kommentare für diese Stadt.</p>
+                    <p>Keine Kommentare für diese Stadt.</p>
                 ) : (
-                    <ul style={{ listStyle: "none", padding: 0 }}>
+                    <ul >
                         {comments.map((c) => (
-                            <li key={c.id} style={{ marginBottom: "15px", borderBottom: "1px solid #ddd", paddingBottom: "10px" }}>
+                            <li key={c.id} className="comment-box">
                                 <strong>{c.username}</strong> schrieb am {new Date(c.createdAt).toLocaleString()}:
                                 <p>{c.comment}</p>
                                 {c.imageUrl && (
-                                    <img src={c.imageUrl} alt="Bild zur Stadt" style={{ maxWidth: "100px", marginTop: "5px" }} />
+                                    <img src={c.imageUrl} alt="Bild zur Stadt" />
                                 )}
+                                <div className="link-buttons">
+                                <Link to={`/edit/${c.id}?city=${encodeURIComponent(cityName)}`}>
+                                    <button>Edit</button>
+                                </Link>
+                                <Link to={`/delete/${c.id}`}>
+                                    <button>Delete</button>
+                                </Link>
+                                </div>
                             </li>
+
                         ))}
+
                     </ul>
                 )}
             </div>

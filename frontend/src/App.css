@@ -1,42 +1,173 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+/* App.css */
+
+/* === Allgemein === */
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background-color: #f0f0f0;
+    color: #2e7d32;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+/* === Zentrierung & Container === */
+.container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+    text-align: center;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+/* === Titel === */
+h2, h3, h4 {
+    color: #2e7d32;
+    text-align: center;
+    margin-bottom: 15px;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+/* === Buttons === */
+button {
+    background-color: #2e7d32;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    margin: 8px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
 }
 
-.card {
-  padding: 2em;
+button:hover {
+    background-color: #1b5e20;
 }
 
-.read-the-docs {
-  color: #888;
+/* === Inputs und Textareas === */
+input[type="text"],
+textarea,
+input[type="password"],
+input[type="email"] {
+    width: 100%;
+    max-width: 600px;
+    padding: 12px;
+    border: 1px solid #a5d6a7;
+    border-radius: 4px;
+    margin-bottom: 12px;
+    font-size: 1rem;
+    background-color: white;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    resize: vertical;
+}
+
+input:focus,
+textarea:focus {
+    outline: none;
+    border-color: #2e7d32;
+    box-shadow: 0 0 4px #81c784;
+}
+
+/* === Kommentar Box === */
+.comment-box {
+    background-color: white;
+    border-left: 5px solid #a5d6a7;
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 6px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    text-align: left;
+    width: 100%;
+    max-width: 600px;
+}
+
+.comment-box img {
+    max-width: 100px;
+    margin-top: 10px;
+    border-radius: 4px;
+}
+
+/* === City List === */
+.city-list-item {
+    background-color: #ffffff;
+    border: 1px solid #a5d6a7;
+    padding: 12px;
+    margin: 10px 0;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+    max-width: 600px;
+    width: 100%;
+}
+
+.city-list-item:hover {
+    background-color: #e8f5e9;
+}
+
+/* === City Summary Box === */
+.city-summary {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 6px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+    max-width: 700px;
+    margin-top: 30px;
+    width: 100%;
+    text-align: left;
+}
+
+/* === Link Buttons (Edit / Delete) === */
+.link-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+/* === Formular (Edit Form z.B.) === */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    background-color: white;
+    padding: 25px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    width: 100%;
+    max-width: 500px;
+    margin-top: 20px;
+}
+
+form label {
+    text-align: left;
+    font-weight: bold;
+}
+
+form input {
+    padding: 10px;
+    border: 1px solid #a5d6a7;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+/* === Responsive (für Handys und Tablets) === */
+@media (max-width: 768px) {
+    .container {
+        padding: 10px;
+    }
+
+    .city-summary,
+    .comment-box,
+    .city-list-item,
+    form {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    button {
+        width: 100%;
+    }
+
+    .link-buttons {
+        flex-direction: column;
+        align-items: stretch;
+    }
 }

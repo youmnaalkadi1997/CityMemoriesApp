@@ -25,6 +25,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(a -> a
                         .requestMatchers(HttpMethod.GET,"/api/comment/{cityName}").authenticated()
+                        .requestMatchers(HttpMethod.GET,"/api/comment/getId/{id}").authenticated()
                         .requestMatchers(HttpMethod.POST,"/api/addcomment").authenticated()
                         .requestMatchers(HttpMethod.PUT,"/api/comment/{id}").authenticated()
                         .requestMatchers("/api/auth/me").authenticated()

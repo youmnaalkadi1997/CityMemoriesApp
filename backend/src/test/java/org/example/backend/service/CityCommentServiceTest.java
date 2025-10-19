@@ -29,6 +29,17 @@ class CityCommentServiceTest {
         assertThat(newList.getFirst().getComment()).isEqualTo("Test");
         verify(mockRepo).findByCityNameIgnoreCase("Berlin");
     }
+    @Test
+    public void testGetCommentById() {
+
+        Optional<CityComment> cityComment = Optional.of(CityComment.builder().id("1").comment("Test").cityName("Berlin").build());
+        CityCommentRepository mockRepo = mock(CityCommentRepository.class);
+        when(mockRepo.findById("1")).thenReturn(cityComment);
+        CityCommentService cityCommentService = new CityCommentService(mockRepo);
+        Optional<CityComment> newComment = cityCommentService.getCommentById("1");
+        assertThat(newComment.get().getId()).isEqualTo("1");
+        verify(mockRepo).findById("1");
+    }
 
     @Test
     void addComment() {

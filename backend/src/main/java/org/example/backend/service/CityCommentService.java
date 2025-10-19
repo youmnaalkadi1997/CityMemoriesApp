@@ -29,6 +29,10 @@ public class CityCommentService {
         return comments;
     }
 
+    public Optional<CityComment> getCommentById(String id) {
+        return cityCommentRepository.findById(id);
+    }
+
     public CityComment addComment(CityComment comment) {
 
         String id = UUID.randomUUID().toString();

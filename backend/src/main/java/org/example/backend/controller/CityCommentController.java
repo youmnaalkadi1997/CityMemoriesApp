@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api")
@@ -22,6 +23,15 @@ public class CityCommentController {
     @GetMapping("/comment/{cityName}")
     public List<CityComment> getCommentsByCity(@PathVariable String cityName) {
         return  cityCommentService.allComments(cityName);
+    }
+
+    @GetMapping("/comment/getId/{id}")
+    public CityComment getCommentsById(@PathVariable String id) {
+        Optional<CityComment> cityCommentOptional =  cityCommentService.getCommentById(id);
+        if(cityCommentOptional.isPresent()){
+            return cityCommentOptional.get();
+        }
+        throw new NoSuchElementException("Comment mit ID: " + id + " nicht verfügbar");
     }
 
     @PostMapping("/addcomment")

@@ -52,6 +52,31 @@ class CityCommentControllerTest {
 
     @Test
     @WithMockUser
+    void getCommentById() throws Exception {
+
+        CityComment cityComment = CityComment.builder().id("1")
+                .comment("Test")
+                .cityName("Berlin")
+                .build();
+        cityCommentRepository.save(cityComment);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/comment/getId/{id}", "1"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().json(
+                        """
+                                 
+                                  {
+                                     "id" : "1",
+                                    "comment" : "Test",
+                                    "cityName" : "Berlin"
+                                   }
+                                  
+                                  """
+                ));
+    }
+
+    @Test
+    @WithMockUser
     void addComment() throws Exception {
 
         mockMvc.perform(MockMvcRequestBuilders.post("/api/addcomment")
