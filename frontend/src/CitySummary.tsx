@@ -144,7 +144,7 @@ export default function CitySummary({ cityName, user }: Props) {
                                 <Link to={`/edit/${c.id}?city=${encodeURIComponent(cityName)}`}>
                                     <button>Edit</button>
                                 </Link>
-                                <Link to={`/delete/${c.id}`}>
+                                <Link to={`/delete/${c.id}?city=${encodeURIComponent(cityName)}`}>
                                     <button>Delete</button>
                                 </Link>
                                 </div>

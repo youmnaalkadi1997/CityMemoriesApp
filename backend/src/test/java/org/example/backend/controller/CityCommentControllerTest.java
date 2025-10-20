@@ -132,4 +132,18 @@ class CityCommentControllerTest {
                                    """
                 ));
     }
+
+    @Test
+    @WithMockUser
+    void deleteComment() throws Exception {
+
+        CityComment cityComment = CityComment.builder().id("1")
+                .comment("Test")
+                .cityName("Berlin")
+                .build();
+        cityCommentRepository.save(cityComment);
+
+        mockMvc.perform(MockMvcRequestBuilders.delete("/api/comment/{id}", "1"))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+    }
 }

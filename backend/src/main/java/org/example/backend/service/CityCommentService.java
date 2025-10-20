@@ -57,4 +57,12 @@ public class CityCommentService {
             return null;
         }
     }
+
+    public void deleteCommentById(String id) {
+        if (cityCommentRepository.existsById(id)) {
+            cityCommentRepository.deleteById(id);
+        } else {
+            throw new NoSuchElementException("Keine Kommentare gefunden für: " + id);
+        }
+    }
 }

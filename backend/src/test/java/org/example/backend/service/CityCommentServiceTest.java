@@ -9,11 +9,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 class CityCommentServiceTest {
 
@@ -37,6 +35,7 @@ class CityCommentServiceTest {
         when(mockRepo.findById("1")).thenReturn(cityComment);
         CityCommentService cityCommentService = new CityCommentService(mockRepo);
         Optional<CityComment> newComment = cityCommentService.getCommentById("1");
+        assertThat(newComment).isPresent();
         assertThat(newComment.get().getId()).isEqualTo("1");
         verify(mockRepo).findById("1");
     }
@@ -64,5 +63,17 @@ class CityCommentServiceTest {
         assertThat(newComment.getComment()).isEqualTo("Test");
         verify(mockRepo).findById("1");
         verify(mockRepo).save(newComment);
+    }
+
+    @Test
+    void deleteCommentById() {
+        String id = "1";
+        CityCommentRepository mockRepo = mock(CityCommentRepository.class);
+
+        doNothing().when(mockRepo).deleteById(id);
+        when(mockRepo.existsById(id)).thenReturn(true);
+        CityCommentService cityCommentService = new CityCommentService(mockRepo);
+        cityCommentService.deleteCommentById(id);
+        verify(mockRepo).deleteById(id);
     }
 }

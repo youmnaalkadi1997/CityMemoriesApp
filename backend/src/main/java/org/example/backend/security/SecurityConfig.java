@@ -28,6 +28,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET,"/api/comment/getId/{id}").authenticated()
                         .requestMatchers(HttpMethod.POST,"/api/addcomment").authenticated()
                         .requestMatchers(HttpMethod.PUT,"/api/comment/{id}").authenticated()
+                        .requestMatchers(HttpMethod.DELETE,"/api/comment/{id}").authenticated()
                         .requestMatchers("/api/auth/me").authenticated()
                         .anyRequest().permitAll()
                 )

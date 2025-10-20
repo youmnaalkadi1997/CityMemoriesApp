@@ -48,4 +48,9 @@ public class CityCommentController {
             throw new NoSuchElementException("Kommentare mit ID: " + id + " nicht verfügbar");
         }
     }
+
+    @DeleteMapping("/comment/{id}")
+    public void deleteComment(@PathVariable String id){
+        cityCommentService.deleteCommentById(id);
+    }
 }
