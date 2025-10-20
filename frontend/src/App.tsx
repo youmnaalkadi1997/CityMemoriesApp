@@ -19,7 +19,7 @@ function App() {
             })
             .catch(error => {
                 setUser(null);
-                console.log("Not authenticated", error);
+                console.log(error);
             });
     }, []);
 

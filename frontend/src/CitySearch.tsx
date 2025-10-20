@@ -21,7 +21,7 @@ export default function CitySearch(props:Readonly<ProtectedRoutProps>) {
     const [searchParams] = useSearchParams();
 
 
-    const fetchCities = (cityName: string) => {
+    function fetchCities  (cityName: string)  {
         setIsLoading(true);
         axios.get("https://nominatim.openstreetmap.org/search", {
             params: {
@@ -43,7 +43,7 @@ export default function CitySearch(props:Readonly<ProtectedRoutProps>) {
             .finally(() => {
                 setIsLoading(false);
             });
-    };
+    }
 
     useEffect(() => {
         if (query.length < 2) {
@@ -63,7 +63,7 @@ export default function CitySearch(props:Readonly<ProtectedRoutProps>) {
         if (selected) {
             setSelectedCity(selected);
         }
-    }, []);
+    }, [searchParams]);
 
     return (
         <div className="container city-search">
@@ -76,7 +76,7 @@ export default function CitySearch(props:Readonly<ProtectedRoutProps>) {
                 onChange={(e) => setQuery(e.target.value)}
             />
 
-            {isLoading && <p>⏳ Lade Städte...</p>}
+            {isLoading && <p>Lade Städte...</p>}
 
             <ul>
                 {results.map((city) => (

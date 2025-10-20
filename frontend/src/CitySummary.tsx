@@ -70,28 +70,29 @@ export default function CitySummary({ cityName, user }: Props) {
         return () => clearTimeout(timer);
     }, [message]);
 
-    if (loading) return <p>⏳ Lade Beschreibung...</p>;
-    if (!data) return <p>❌ Keine Beschreibung gefunden.</p>;
-
-    const addComment = () => {
+    function addComment () {
         axios.post("/api/addcomment", {
             cityName: cityName,
             username: user,
             comment: comment
         })
             .then(() => {
-                setMessage("✅Kommentar erfolgreich hinzugefügt ");
+                setMessage("Kommentar erfolgreich hinzugefügt");
                 setComment("");
+                return axios.get(`/api/comment/${encodeURIComponent(cityName)}`);
             })
+            .then(res => setComments(res.data))
             .catch((error) => {
                 if (error.response) {
                     const serverMessage = error.response.data?.message || "Unbekannter Fehler";
-                    setMessage("❌ " + serverMessage);
+                    setMessage(serverMessage);
                 } else {
-                    setMessage("❌ Netzwerkfehler oder Server nicht erreichbar");
+                    setMessage("Netzwerkfehler oder Server nicht erreichbar");
                 }
             });
-    };
+    }
+    if (loading) return <p>Lade Beschreibung...</p>;
+    if (!data) return <p>Keine Beschreibung gefunden.</p>;
 
     return (
         <div className="city-summary">
@@ -122,7 +123,7 @@ export default function CitySummary({ cityName, user }: Props) {
                 <button onClick={addComment}>Senden</button>
 
                 {message && (
-                    <p style={{ marginTop: "10px", color: message.includes("✅") ? "green" : "red" }}>
+                    <p>
                         {message}
                     </p>
                 )}
@@ -132,26 +133,31 @@ export default function CitySummary({ cityName, user }: Props) {
                 {comments.length === 0 ? (
                     <p>Keine Kommentare für diese Stadt.</p>
                 ) : (
-                    <ul >
+                    <ul>
                         {comments.map((c) => (
                             <li key={c.id} className="comment-box">
                                 <strong>{c.username}</strong> schrieb am {new Date(c.createdAt).toLocaleString()}:
                                 <p>{c.comment}</p>
-                                {c.imageUrl && (
-                                    <img src={c.imageUrl} alt="Bild zur Stadt" />
+                                {c.updatedAt && c.updatedAt !== c.createdAt && (
+                                    <p>
+                                        Zuletzt bearbeitet am: {new Date(c.updatedAt).toLocaleString()}
+                                    </p>
                                 )}
-                                <div className="link-buttons">
-                                <Link to={`/edit/${c.id}?city=${encodeURIComponent(cityName)}`}>
-                                    <button>Edit</button>
-                                </Link>
-                                <Link to={`/delete/${c.id}?city=${encodeURIComponent(cityName)}`}>
-                                    <button>Delete</button>
-                                </Link>
-                                </div>
+
+                                {c.imageUrl && <img src={c.imageUrl} alt="Bild zur Stadt" />}
+
+                                {user === c.username && (
+                                    <div className="link-buttons">
+                                        <Link to={`/edit/${c.id}?city=${encodeURIComponent(cityName)}`}>
+                                            <button>Edit</button>
+                                        </Link>
+                                        <Link to={`/delete/${c.id}?city=${encodeURIComponent(cityName)}`}>
+                                            <button>Delete</button>
+                                        </Link>
+                                    </div>
+                                )}
                             </li>
-
                         ))}
-
                     </ul>
                 )}
             </div>

@@ -16,6 +16,7 @@ public class Custom0Auth2UserService extends DefaultOAuth2UserService {
 
     private final AppUserRepository appUserRepository;
 
+    @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) {
 
         OAuth2User oauthUser = super.loadUser(userRequest);
