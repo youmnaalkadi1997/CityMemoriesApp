@@ -5,11 +5,10 @@ import org.example.backend.model.CityCommentDTO;
 import org.example.backend.repository.CityCommentRepository;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -25,6 +24,14 @@ class CityCommentServiceTest {
         CityCommentService cityCommentService = new CityCommentService(mockRepo);
         List<CityComment> newList = cityCommentService.allComments("Berlin");
         assertThat(newList.getFirst().getComment()).isEqualTo("Test");
+        verify(mockRepo).findByCityNameIgnoreCase("Berlin");
+    }
+    @Test
+    void allComments_whenNoComments_shouldThrowException() {
+        CityCommentRepository mockRepo = mock(CityCommentRepository.class);
+        when(mockRepo.findByCityNameIgnoreCase("Berlin")).thenReturn(Collections.emptyList());
+        CityCommentService cityCommentService = new CityCommentService(mockRepo);
+        assertThrows(NoSuchElementException.class, () -> cityCommentService.allComments("Berlin"));
         verify(mockRepo).findByCityNameIgnoreCase("Berlin");
     }
     @Test
@@ -66,6 +73,18 @@ class CityCommentServiceTest {
     }
 
     @Test
+    void updateComment_whenCommentNotFound_shouldReturnNull() {
+        CityCommentDTO cityCommentDTO = CityCommentDTO.builder().comment("Test").build();
+        CityCommentRepository mockRepo = mock(CityCommentRepository.class);
+        when(mockRepo.findById("10")).thenReturn(Optional.empty());
+        CityCommentService cityCommentService = new CityCommentService(mockRepo);
+        CityComment result = cityCommentService.updateComment("10", cityCommentDTO);
+        assertThat(result).isNull();
+        verify(mockRepo).findById("10");
+        verify(mockRepo, never()).save(any());
+    }
+
+    @Test
     void deleteCommentById() {
         String id = "1";
         CityCommentRepository mockRepo = mock(CityCommentRepository.class);
@@ -75,5 +94,16 @@ class CityCommentServiceTest {
         CityCommentService cityCommentService = new CityCommentService(mockRepo);
         cityCommentService.deleteCommentById(id);
         verify(mockRepo).deleteById(id);
+    }
+
+    @Test
+    void deleteCommentById_whenCommentNotFound_shouldThrowException() {
+        String id = "999";
+        CityCommentRepository mockRepo = mock(CityCommentRepository.class);
+        when(mockRepo.existsById(id)).thenReturn(false);
+        CityCommentService cityCommentService = new CityCommentService(mockRepo);
+        assertThrows(NoSuchElementException.class, () -> cityCommentService.deleteCommentById(id));
+        verify(mockRepo).existsById(id);
+        verify(mockRepo, never()).deleteById(any());
     }
 }

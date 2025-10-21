@@ -14,6 +14,8 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.http.MediaType;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
 @SpringBootTest
@@ -38,7 +40,7 @@ class CityCommentControllerTest {
         cityCommentRepository.save(cityComment);
 
         mockMvc.perform(MockMvcRequestBuilders.get("/api/comment/{cityName}", "Berlin"))
-                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.content().json(
                         """
                                  [
@@ -63,7 +65,7 @@ class CityCommentControllerTest {
         cityCommentRepository.save(cityComment);
 
         mockMvc.perform(MockMvcRequestBuilders.get("/api/comment/getId/{id}", "1"))
-                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.content().json(
                         """
                                  
@@ -75,6 +77,16 @@ class CityCommentControllerTest {
                                   
                                   """
                 ));
+    }
+
+    @Test
+    @WithMockUser
+    void getCommentBy_whenIdDoesNotExist_shouldReturnDetailedError() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/comment/getId/{id}", "4"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message").value("Kommentar mit ID: 4 nicht verfügbar"))
+                .andExpect(jsonPath("$.status").value(404))
+                .andExpect(jsonPath("$.timestamp").exists());
     }
 
     @Test
@@ -92,7 +104,7 @@ class CityCommentControllerTest {
                                    }
                                  """)
                 )
-                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.content().json(
                         """
                                    {
@@ -102,6 +114,25 @@ class CityCommentControllerTest {
                                    }
                                    """
                 ));
+    }
+
+    @Test
+    @WithMockUser
+    void addComment_withInvalidData_shouldReturn400() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/addcomment")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                        {
+                          "cityName" : "Berlin",
+                          "username" : "youmna",
+                           "comment" : ""
+                        }
+                    """))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("Kommentar darf nicht leer sein"))
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.timestamp").exists());
     }
 
     @Test
@@ -122,7 +153,7 @@ class CityCommentControllerTest {
                                     "comment" : "Testing"
                                    }
                                  """)
-                ).andExpect(MockMvcResultMatchers.status().isOk())
+                ).andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.content().json(
                         """
                                  
@@ -138,6 +169,22 @@ class CityCommentControllerTest {
 
     @Test
     @WithMockUser
+    void updateComment_whenIdDoesNotExist_shouldReturnError() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.put("/api/comment/{id}", "5")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                              {
+                                "cityName" : "Berlin",
+                                "comment" : "Updated Comment"
+                              }
+                            """)
+                )
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @WithMockUser
     void deleteComment() throws Exception {
 
         CityComment cityComment = CityComment.builder().id("1")
@@ -148,6 +195,6 @@ class CityCommentControllerTest {
 
         mockMvc.perform(MockMvcRequestBuilders.delete("/api/comment/{id}", "1")
                         .with(csrf()))
-                .andExpect(MockMvcResultMatchers.status().isOk());
+                .andExpect(status().isOk());
     }
 }

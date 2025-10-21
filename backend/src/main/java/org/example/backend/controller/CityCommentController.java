@@ -31,7 +31,7 @@ public class CityCommentController {
         if(cityCommentOptional.isPresent()){
             return cityCommentOptional.get();
         }
-        throw new NoSuchElementException("Comment mit ID: " + id + " nicht verfügbar");
+        throw new NoSuchElementException("Kommentar mit ID: " + id + " nicht verfügbar");
     }
 
     @PostMapping("/addcomment")
