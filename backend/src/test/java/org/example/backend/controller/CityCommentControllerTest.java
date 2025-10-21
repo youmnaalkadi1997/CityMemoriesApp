@@ -13,6 +13,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.http.MediaType;
 
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 
 
 @SpringBootTest
@@ -81,6 +82,7 @@ class CityCommentControllerTest {
     void addComment() throws Exception {
 
         mockMvc.perform(MockMvcRequestBuilders.post("/api/addcomment")
+                        .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                   {
@@ -112,6 +114,7 @@ class CityCommentControllerTest {
         cityCommentRepository.save(cityComment);
 
         mockMvc.perform(MockMvcRequestBuilders.put("/api/comment/{id}" , "1")
+                        .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                   {
@@ -143,7 +146,8 @@ class CityCommentControllerTest {
                 .build();
         cityCommentRepository.save(cityComment);
 
-        mockMvc.perform(MockMvcRequestBuilders.delete("/api/comment/{id}", "1"))
+        mockMvc.perform(MockMvcRequestBuilders.delete("/api/comment/{id}", "1")
+                        .with(csrf()))
                 .andExpect(MockMvcResultMatchers.status().isOk());
     }
 }
