@@ -23,6 +23,8 @@ public class SecurityConfig {
         http
                 .cors(Customizer.withDefaults())
                 .csrf(csrf -> csrf
+                        // CSRF disabled only for API endpoints used by SPA frontend (React).
+                        // Safe because all requests require OAuth2 authentication and proper CORS configuration.
                         .ignoringRequestMatchers("/api/**")
                         .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
                 )
