@@ -5,7 +5,9 @@ import org.example.backend.model.CityComment;
 import org.example.backend.model.CityCommentDTO;
 import org.example.backend.repository.CityCommentRepository;
 import org.junit.jupiter.api.Test;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -64,28 +66,30 @@ class CityCommentServiceTest {
     }
 
     @Test
-    void updateComment() {
+    void updateComment() throws IOException {
         CityComment cityComment = CityComment.builder().id("1").comment("Testing").build();
         CityCommentDTO cityCommentDTO = CityCommentDTO.builder().comment("Test").build();
         CityCommentRepository mockRepo = mock(CityCommentRepository.class);
         Cloudinary mockCloudinary = mock(Cloudinary.class);
         when(mockRepo.findById("1")).thenReturn(Optional.of(cityComment));
         when(mockRepo.save(any(CityComment.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        MultipartFile file = null;
         CityCommentService cityCommentService = new CityCommentService(mockRepo, mockCloudinary);
-        CityComment newComment = cityCommentService.updateComment("1", cityCommentDTO);
+        CityComment newComment = cityCommentService.updateComment("1", cityCommentDTO, file);
         assertThat(newComment.getComment()).isEqualTo("Test");
         verify(mockRepo).findById("1");
         verify(mockRepo).save(newComment);
     }
 
     @Test
-    void updateComment_whenCommentNotFound_shouldReturnNull() {
+    void updateComment_whenCommentNotFound_shouldReturnNull() throws IOException {
         CityCommentDTO cityCommentDTO = CityCommentDTO.builder().comment("Test").build();
         CityCommentRepository mockRepo = mock(CityCommentRepository.class);
         Cloudinary mockCloudinary = mock(Cloudinary.class);
         when(mockRepo.findById("10")).thenReturn(Optional.empty());
+        MultipartFile file = null;
         CityCommentService cityCommentService = new CityCommentService(mockRepo, mockCloudinary);
-        CityComment result = cityCommentService.updateComment("10", cityCommentDTO);
+        CityComment result = cityCommentService.updateComment("10", cityCommentDTO, file);
         assertThat(result).isNull();
         verify(mockRepo).findById("10");
         verify(mockRepo, never()).save(any());

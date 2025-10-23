@@ -45,8 +45,12 @@ public class CityCommentController {
     }
 
     @PutMapping("/comment/{id}")
-    public CityComment updateComment(@PathVariable String id, @RequestBody CityCommentDTO  cityCommentDTO) {
-        CityComment cityComment = cityCommentService.updateComment(id, cityCommentDTO);
+    public CityComment updateComment(
+            @PathVariable String id,
+            @RequestPart("data") CityCommentDTO cityCommentDTO,
+            @RequestPart(value = "file", required = false) MultipartFile file
+    ) throws IOException {
+        CityComment cityComment = cityCommentService.updateComment(id, cityCommentDTO,file);
         if (cityComment != null) {
             return cityComment;
         } else {

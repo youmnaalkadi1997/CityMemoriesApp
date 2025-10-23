@@ -12,8 +12,6 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import org.springframework.http.MediaType;
-
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -143,47 +141,53 @@ class CityCommentControllerTest {
     @Test
     @WithMockUser
     void updateComment() throws Exception {
-        CityComment cityComment = CityComment.builder().id("1")
-                .comment("Test")
+        CityComment cityComment = CityComment.builder()
+                .id("1")
                 .cityName("Berlin")
+                .comment("Test")
                 .build();
         cityCommentRepository.save(cityComment);
 
-        mockMvc.perform(MockMvcRequestBuilders.put("/api/comment/{id}" , "1")
+        MockMultipartFile data = new MockMultipartFile(
+                "data",
+                "",
+                "application/json",
+                """
+                {
+                  "comment": "Testing"
+                }
+                """.getBytes()
+        );
+
+        mockMvc.perform(MockMvcRequestBuilders.multipart("/api/comment/{id}", "1")
+                        .file(data)
                         .with(csrf())
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
-                                  {
-                                    "cityName" : "Berlin",
-                                    "comment" : "Testing"
-                                   }
-                                 """)
-                ).andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.content().json(
-                        """
-                                 
-                                   {
-                                     "id" : "1",
-                                    "cityName" : "Berlin",
-                                    "comment" : "Testing"
-                                   }
-                                   
-                                   """
-                ));
+                        .with(request -> { request.setMethod("PUT"); return request; })
+                )
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id").value("1"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.cityName").value("Berlin"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.comment").value("Testing"));
     }
 
     @Test
     @WithMockUser
     void updateComment_whenIdDoesNotExist_shouldReturnError() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.put("/api/comment/{id}", "5")
+        MockMultipartFile data = new MockMultipartFile(
+                "data",
+                "",
+                "application/json",
+                """
+                {
+                  "comment": "Updated Comment"
+                }
+                """.getBytes()
+        );
+
+        mockMvc.perform(MockMvcRequestBuilders.multipart("/api/comment/{id}", "999")
+                        .file(data)
                         .with(csrf())
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
-                              {
-                                "cityName" : "Berlin",
-                                "comment" : "Updated Comment"
-                              }
-                            """)
+                        .with(request -> { request.setMethod("PUT"); return request; })
                 )
                 .andExpect(status().isNotFound());
     }

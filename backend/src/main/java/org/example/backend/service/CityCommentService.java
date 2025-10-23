@@ -67,14 +67,28 @@ public class CityCommentService {
         return addComment(comment);
     }
 
-    public CityComment updateComment(String id, CityCommentDTO cityCommentDTO) {
-        Optional<CityComment> existingCommentOpt = cityCommentRepository.findById(id);
-        if (existingCommentOpt.isPresent()) {
-            CityComment existingComment = existingCommentOpt.get();
-            existingComment.setComment(cityCommentDTO.getComment());
-            existingComment.setUpdatedAt(LocalDateTime.now());
-            return cityCommentRepository.save(existingComment);
-        } else {
+
+    public CityComment updateComment(String id, CityCommentDTO dto, MultipartFile file) throws IOException {
+        Optional<CityComment> existingOpt = cityCommentRepository.findById(id);
+
+        if (existingOpt.isPresent()) {
+
+            CityComment existing = existingOpt.get();
+
+            existing.setComment(dto.getComment());
+            existing.setUpdatedAt(LocalDateTime.now());
+
+            if (file != null && !file.isEmpty()) {
+                Map uploadResult = cloudinary.uploader().upload(
+                        file.getBytes(),
+                        ObjectUtils.asMap("folder", "city-comments")
+                );
+                String newImageUrl = (String) uploadResult.get("secure_url");
+                existing.setImageUrl(newImageUrl);
+            }
+
+            return cityCommentRepository.save(existing);
+        }else  {
             return null;
         }
     }
