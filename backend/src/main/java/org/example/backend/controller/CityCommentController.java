@@ -5,7 +5,9 @@ import org.example.backend.model.CityComment;
 import org.example.backend.model.CityCommentDTO;
 import org.example.backend.service.CityCommentService;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -35,8 +37,11 @@ public class CityCommentController {
     }
 
     @PostMapping("/addcomment")
-    public CityComment addComment(@Valid @RequestBody CityComment comment)  {
-        return  cityCommentService.addComment(comment);
+    public CityComment addComment(
+            @Valid @RequestPart("data") CityComment comment,
+            @RequestPart(value = "file", required = false) MultipartFile file
+    ) throws IOException {
+        return cityCommentService.addCommentWithImage(comment, file);
     }
 
     @PutMapping("/comment/{id}")

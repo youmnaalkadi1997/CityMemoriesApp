@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import {type ChangeEvent, useEffect, useState} from "react";
 import axios from "axios";
 import {Link} from "react-router-dom";
 
@@ -38,7 +38,7 @@ export default function CitySummary({ cityName, user }: Props) {
     const [comment, setComment] = useState("");
     const [message, setMessage] = useState("");
     const [comments, setComments] = useState<CityComment[]>([]);
-
+    const [image, setImage] = useState<File>();
 
     useEffect(() => {
         if (!cityName) return;
@@ -70,27 +70,47 @@ export default function CitySummary({ cityName, user }: Props) {
         return () => clearTimeout(timer);
     }, [message]);
 
-    function addComment () {
-        axios.post("/api/addcomment", {
+    function addComment(event?: React.FormEvent<HTMLFormElement>) {
+        event?.preventDefault();
+        const data = new FormData();
+
+        if (image) {
+            data.append("file", image);
+        }
+
+        const json = {
             cityName: cityName,
             username: user,
             comment: comment
+        };
+
+        data.append("data", new Blob([JSON.stringify(json)], { type: "application/json" }));
+
+        axios.post("/api/addcomment", data, {
+            headers: { "Content-Type": "multipart/form-data" }
         })
             .then(() => {
                 setMessage("Kommentar erfolgreich hinzugefügt");
                 setComment("");
+                setImage(undefined);
                 return axios.get(`/api/comment/${encodeURIComponent(cityName)}`);
             })
             .then(res => setComments(res.data))
             .catch((error) => {
                 if (error.response) {
-                    const serverMessage = error.response.data?.message || "Unbekannter Fehler";
-                    setMessage(serverMessage);
+                    setMessage(error.response.data?.message || "Fehler beim Hochladen");
                 } else {
                     setMessage("Netzwerkfehler oder Server nicht erreichbar");
                 }
             });
     }
+
+    function onFileChange(event: ChangeEvent<HTMLInputElement>) {
+        if (event.target.files) {
+            setImage(event.target.files[0])
+        }
+    }
+
     if (loading) return <p>Lade Beschreibung...</p>;
     if (!data) return <p>Keine Beschreibung gefunden.</p>;
 
@@ -113,21 +133,21 @@ export default function CitySummary({ cityName, user }: Props) {
                 </p>
             )}
 
-            <div>
+            <form onSubmit={addComment}>
                 <textarea
                     value={comment}
                     onChange={(e) => setComment(e.target.value)}
                     rows={4}
                     placeholder="Kommentieren .."
                 />
-                <button onClick={addComment}>Senden</button>
-
+                <input type='file' onChange={onFileChange}/>
+                <button type="submit">Senden</button>
                 {message && (
                     <p>
                         {message}
                     </p>
                 )}
-            </div>
+            </form>
             <div>
                 <h4>Kommentare:</h4>
                 {comments.length === 0 ? (

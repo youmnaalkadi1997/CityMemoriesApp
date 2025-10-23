@@ -6,6 +6,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.NoSuchElementException;
 
@@ -44,6 +45,17 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorMessage> handleNullPointerException(NullPointerException ex) {
         ErrorMessage error = ErrorMessage.builder()
                 .message(ex.getMessage())
+                .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                .timestamp(LocalDateTime.now())
+                .build();
+
+        return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(IOException.class)
+    public ResponseEntity<ErrorMessage> handleIOException(IOException ex) {
+        ErrorMessage error = ErrorMessage.builder()
+                .message("Fehler beim Hochladen der Datei: " + ex.getMessage())
                 .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
                 .timestamp(LocalDateTime.now())
                 .build();

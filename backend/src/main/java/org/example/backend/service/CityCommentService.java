@@ -1,22 +1,26 @@
 package org.example.backend.service;
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import org.example.backend.model.CityComment;
 import org.example.backend.model.CityCommentDTO;
 import org.example.backend.repository.CityCommentRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class CityCommentService {
 
     private final CityCommentRepository cityCommentRepository;
-    public CityCommentService(CityCommentRepository cityCommentRepository) {
+    private final Cloudinary cloudinary;
+
+    public CityCommentService(CityCommentRepository cityCommentRepository, Cloudinary cloudinary) {
         this.cityCommentRepository = cityCommentRepository;
+        this.cloudinary = cloudinary;
     }
 
     public List<CityComment> allComments(String cityName) {
@@ -41,9 +45,26 @@ public class CityCommentService {
                 .cityName(comment.getCityName())
                 .username(comment.getUsername())
                 .comment(comment.getComment())
+                .imageUrl(comment.getImageUrl())
                 .createdAt(LocalDateTime.now())
                 .build();
         return cityCommentRepository.save(newComment);
+    }
+
+    public CityComment addCommentWithImage(CityComment comment, MultipartFile file) throws IOException {
+        String imageUrl = null;
+
+        if (file != null && !file.isEmpty()) {
+            Map uploadResult = cloudinary.uploader().upload(
+                    file.getBytes(),
+                    ObjectUtils.asMap("folder", "city-comments")
+            );
+            imageUrl = (String) uploadResult.get("secure_url");
+        }
+
+        comment.setImageUrl(imageUrl);
+
+        return addComment(comment);
     }
 
     public CityComment updateComment(String id, CityCommentDTO cityCommentDTO) {

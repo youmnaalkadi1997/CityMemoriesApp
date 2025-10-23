@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.client.AutoConfigureMockRestServiceServer;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -92,43 +93,47 @@ class CityCommentControllerTest {
     @Test
     @WithMockUser
     void addComment() throws Exception {
+        MockMultipartFile data = new MockMultipartFile(
+                "data",
+                "",
+                "application/json",
+                """
+                {
+                  "cityName": "Berlin",
+                  "username": "youmna",
+                  "comment": "Test"
+                }
+                """.getBytes()
+        );
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/api/addcomment")
-                        .with(csrf())
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
-                                  {
-                                    "cityName" : "Berlin",
-                                    "username" : "youmna",
-                                    "comment" : "Test"
-                                   }
-                                 """)
-                )
+        mockMvc.perform(MockMvcRequestBuilders.multipart("/api/addcomment")
+                        .file(data)
+                        .with(csrf()))
                 .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.content().json(
-                        """
-                                   {
-                                    "cityName" : "Berlin",
-                                    "username" : "youmna",
-                                    "comment" : "Test"
-                                   }
-                                   """
-                ));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.cityName").value("Berlin"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.username").value("youmna"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.comment").value("Test"));
     }
 
     @Test
     @WithMockUser
     void addComment_withInvalidData_shouldReturn400() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.post("/api/addcomment")
-                        .with(csrf())
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
-                        {
-                          "cityName" : "Berlin",
-                          "username" : "youmna",
-                           "comment" : ""
-                        }
-                    """))
+        MockMultipartFile data = new MockMultipartFile(
+                "data",
+                "",
+                "application/json",
+                """
+                {
+                  "cityName": "Berlin",
+                  "username": "youmna",
+                  "comment": ""
+                }
+                """.getBytes()
+        );
+
+        mockMvc.perform(MockMvcRequestBuilders.multipart("/api/addcomment")
+                        .file(data)
+                        .with(csrf()))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value("Kommentar darf nicht leer sein"))
                 .andExpect(jsonPath("$.status").value(400))
