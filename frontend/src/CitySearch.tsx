@@ -89,16 +89,8 @@ export default function CitySearch(props:Readonly<ProtectedRoutProps>) {
                             const cityNameOnly = city.display_name.split(",")[0];
                             setSelectedCity(cityNameOnly);
                         }}
-                        onKeyDown={(e) => {
-                            if (e.key === "Enter" || e.key === " ") {
-                                const cityNameOnly = city.display_name.split(",")[0];
-                                setSelectedCity(cityNameOnly);
-                            }
-                        }}
                     >
                         <strong>{city.display_name}</strong>
-                        <br />
-                        📍 Lat: {city.lat}, Lon: {city.lon}
                     </li>
                 ))}
             </ul>

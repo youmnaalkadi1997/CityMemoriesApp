@@ -5,8 +5,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
 public class FrontendController {
-    @GetMapping({ "/", "/search" })
-    public String index() {
+    @GetMapping("/{path:^(?!.*\\.).*$}")
+    public String forward() {
         return "forward:/index.html";
     }
 }

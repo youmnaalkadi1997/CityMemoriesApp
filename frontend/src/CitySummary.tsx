@@ -23,7 +23,7 @@ type CityComment = {
     username: string;
     comment: string;
     imageUrl?: string;
-    createdAt: string; // ISO string
+    createdAt: string;
     updatedAt: string;
 };
 
@@ -39,6 +39,10 @@ export default function CitySummary({ cityName, user }: Props) {
     const [message, setMessage] = useState("");
     const [comments, setComments] = useState<CityComment[]>([]);
     const [image, setImage] = useState<File>();
+    const [favMessage, setFavMessage] = useState("");
+    const [isFavorite, setIsFavorite] = useState(false);
+
+
 
     useEffect(() => {
         if (!cityName) return;
@@ -65,10 +69,22 @@ export default function CitySummary({ cityName, user }: Props) {
     useEffect(() => {
         const timer = setTimeout(() => {
             setMessage("");
+            setFavMessage("");
         }, 3000);
 
         return () => clearTimeout(timer);
-    }, [message]);
+    }, [message, favMessage]);
+
+    useEffect(() => {
+        if (!user) return;
+
+        axios.get("/api/favorites",{params : {username : user}})
+            .then(res => {
+                const favoriteCities: string[] = res.data;
+                setIsFavorite(favoriteCities.includes(cityName));
+            })
+            .catch(err => console.error(err));
+    }, [cityName, user]);
 
     function addComment(event?: React.FormEvent<HTMLFormElement>) {
         event?.preventDefault();
@@ -111,12 +127,48 @@ export default function CitySummary({ cityName, user }: Props) {
         }
     }
 
+    function toggleFavorite() {
+        if (!user) {
+            setFavMessage("Bitte einloggen, um die Stadt zu favorisieren.");
+            return;
+        }
+
+        if (isFavorite) {
+            axios.delete(`/api/deleteFromFav/${encodeURIComponent(cityName)}` ,{ params : {username : user}})
+                .then(() => {
+                    setIsFavorite(false);
+                    setFavMessage("Stadt aus Favoriten entfernt!");
+                })
+                .catch(err => {
+                    console.error(err);
+                    setFavMessage("Fehler beim Entfernen aus Favoriten.");
+                });
+        } else {
+            axios.post("/api/addToFavorites", {
+                cityName: cityName,
+                username: user
+            })
+                .then(() => {
+                    setIsFavorite(true);
+                    setFavMessage("Stadt zur Favoritenliste hinzugefügt!");
+                })
+                .catch(err => {
+                    console.error(err);
+                    setFavMessage("Fehler beim Hinzufügen zur Favoritenliste.");
+                });
+        }
+    }
+
     if (loading) return <p>Lade Beschreibung...</p>;
     if (!data) return <p>Keine Beschreibung gefunden.</p>;
 
     return (
         <div className="city-summary">
             <h3>{data.title}</h3>
+            <button onClick={toggleFavorite}>
+                {isFavorite ? "In Favoriten" : "Zu Favoriten hinzufügen"}
+            </button>
+            {favMessage && <p>{favMessage}</p>}
 
             {data.thumbnail && (
                 <img src={data.thumbnail.source} alt={data.title} width="100%" />
