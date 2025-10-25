@@ -2,6 +2,7 @@ package org.example.backend.controller;
 
 import org.example.backend.model.CityComment;
 import org.example.backend.repository.CityCommentRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.client.AutoConfigureMockRestServiceServer;
@@ -28,10 +29,14 @@ class CityCommentControllerTest {
     @Autowired
     private CityCommentRepository cityCommentRepository;
 
+    @BeforeEach
+    void setup() {
+        cityCommentRepository.deleteAll();
+    }
+
     @Test
     @WithMockUser
     void getCommentsByCity() throws Exception {
-        cityCommentRepository.deleteAll();
         CityComment cityComment = CityComment.builder().id("1")
                 .comment("Test")
                 .cityName("Berlin")
