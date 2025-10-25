@@ -80,17 +80,16 @@ export default function CitySearch(props:Readonly<ProtectedRoutProps>) {
 
             <ul>
                 {results.map((city) => (
-                    <li
-                        key={`${city.lat}-${city.lon}`}
-                        className="city-list-item"
-                        role="button"
-                        tabIndex={0}
-                        onClick={() => {
-                            const cityNameOnly = city.display_name.split(",")[0];
-                            setSelectedCity(cityNameOnly);
-                        }}
-                    >
-                        <strong>{city.display_name}</strong>
+                    <li key={`${city.lat}-${city.lon}`}>
+                        <button
+                            className="city-list-item"
+                            onClick={() => {
+                                const cityNameOnly = city.display_name.split(",")[0];
+                                setSelectedCity(cityNameOnly);
+                            }}
+                        >
+                            {city.display_name}
+                        </button>
                     </li>
                 ))}
             </ul>
