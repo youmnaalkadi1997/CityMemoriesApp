@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import CitySummary from "./CitySummary.tsx";
-import {useSearchParams} from "react-router-dom";
+import {Link, useSearchParams} from "react-router-dom";
 
 type CityResult = {
     display_name: string;
@@ -45,6 +45,10 @@ export default function CitySearch(props:Readonly<ProtectedRoutProps>) {
             });
     }
 
+    function logout() {
+        window.open('/logout', '_self');
+    }
+
     useEffect(() => {
         if (query.length < 2) {
             setResults([]);
@@ -66,11 +70,19 @@ export default function CitySearch(props:Readonly<ProtectedRoutProps>) {
     }, [searchParams]);
 
     return (
+
         <div className="container city-search">
+            <div className="sidebar">
+                <Link to={"/search"}>Suchen</Link>
+                <Link to="/favorites">Favoritenliste</Link>
+                <Link to="#" onClick={logout}>Logout</Link>
+            </div>
             <h2>Stadt suchen</h2>
 
+            <div className="search-container">
             <input
                 type="text"
+                className="search-input"
                 placeholder="z. B. Berlin, Paris, Dubai..."
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
@@ -79,6 +91,7 @@ export default function CitySearch(props:Readonly<ProtectedRoutProps>) {
             {isLoading && <p>Lade Städte...</p>}
 
             <ul>
+                <div className="search-results">
                 {results.map((city) => (
                     <li key={`${city.lat}-${city.lon}`}>
                         <button
@@ -86,13 +99,16 @@ export default function CitySearch(props:Readonly<ProtectedRoutProps>) {
                             onClick={() => {
                                 const cityNameOnly = city.display_name.split(",")[0];
                                 setSelectedCity(cityNameOnly);
+                                setResults([]);
                             }}
                         >
                             {city.display_name}
                         </button>
                     </li>
                 ))}
+                </div>
             </ul>
+            </div>
 
             {selectedCity && (
                 <>

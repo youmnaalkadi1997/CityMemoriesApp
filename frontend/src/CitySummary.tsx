@@ -165,7 +165,7 @@ export default function CitySummary({ cityName, user }: Props) {
     return (
         <div className="city-summary">
             <h3>{data.title}</h3>
-            <button onClick={toggleFavorite}>
+            <button className="button" onClick={toggleFavorite}>
                 {isFavorite ? "In Favoriten" : "Zu Favoriten hinzufügen"}
             </button>
             {favMessage && <p>{favMessage}</p>}
@@ -185,15 +185,25 @@ export default function CitySummary({ cityName, user }: Props) {
                 </p>
             )}
 
-            <form onSubmit={addComment}>
+            <form className="form" onSubmit={addComment}>
+                <div className="textarea-wrapper">
                 <textarea
                     value={comment}
+                    className="input"
                     onChange={(e) => setComment(e.target.value)}
                     rows={4}
                     placeholder="Kommentieren .."
                 />
-                <input type='file' onChange={onFileChange}/>
-                <button type="submit">Senden</button>
+                <input
+                    type="file"
+                    accept="image/*"
+                    id="fileInput"
+                    style={{ display: "none" }}
+                    onChange={onFileChange}
+                />
+                <label htmlFor="fileInput" className="camera-button">📷</label>
+                </div>
+                <button className="button" type="submit">Senden</button>
                 {message && (
                     <p>
                         {message}
@@ -223,9 +233,19 @@ export default function CitySummary({ cityName, user }: Props) {
                                         <Link to={`/edit/${c.id}?city=${encodeURIComponent(cityName)}`}>
                                             <button>Bearbeiten</button>
                                         </Link>
-                                        <Link to={`/delete/${c.id}?city=${encodeURIComponent(cityName)}`}>
-                                            <button>Löschen</button>
-                                        </Link>
+                                        <button
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                const confirmDelete = window.confirm(
+                                                    "Bist du sicher, dass du diesen Kommentar löschen möchtest?"
+                                                );
+                                                if (confirmDelete) {
+                                                    window.location.href = `/delete/${c.id}?city=${encodeURIComponent(cityName)}`;
+                                                }
+                                            }}
+                                        >
+                                            Löschen
+                                        </button>
                                     </div>
                                 )}
                             </li>

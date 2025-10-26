@@ -7,6 +7,7 @@ import Login from "./Login.tsx";
 import ProtectedRout from "./ProtectedRout.tsx";
 import EditComment from "./EditComment.tsx";
 import DeleteComment from "./DeleteComment.tsx";
+import FavoutiteListe from "./FavoutiteListe.tsx";
 
 function App() {
 
@@ -24,15 +25,17 @@ function App() {
     }, []);
 
   return (
+      <div className="container">
         <Routes>
             <Route path={"/"} element={<Login />}></Route>
             <Route element={<ProtectedRout user={user}/>}>
                 <Route path={"/search"} element={<CitySearch user={user}/>}></Route>
                 <Route path="/edit/:id" element={<EditComment />} />
                 <Route path="/delete/:id" element={<DeleteComment />} />
+                <Route path="/favorites" element={<FavoutiteListe user={user}/>} />
             </Route>
         </Routes>
-
+      </div>
   )
 }
 

@@ -60,26 +60,34 @@ export default function EditComment() {
     return (
         <div className="container">
             <h2>Kommentare bearbeiten</h2>
-            <form onSubmit={updateComment}>
-                <label>
-                    Kommentare:
-                    <input
+            <form className="form" onSubmit={updateComment}>
+                <div className="textarea-wrapper">
+                    <textarea
                         value={comment}
+                        className="input"
                         onChange={(e) => setComment(e.target.value)}
+                        rows={4}
+                        placeholder="Kommentieren .."
                     />
-                </label>
-                <label>
-                    Neues Bild (optional):
-                    <input type="file" accept="image/*" onChange={onFileChange} />
-                </label>
+                    <input
+                        type="file"
+                        accept="image/*"
+                        id="fileInput"
+                        style={{ display: "none" }}
+                        onChange={onFileChange}
+                    />
+                    <label htmlFor="fileInput" className="camera-button">📷</label>
+                </div>
 
                 {preview && (
-                    <div>
+                    <div className="preview">
                         <p>Vorschau:</p>
                         <img src={preview} alt="preview" width="200" />
                     </div>
                 )}
-                <button>Änderungen speichern</button>
+
+                <button className="button" type="submit">Änderungen speichern</button>
+                {message && <p>{message}</p>}
             </form>
             {message && <p>{message}</p>}
         </div>
