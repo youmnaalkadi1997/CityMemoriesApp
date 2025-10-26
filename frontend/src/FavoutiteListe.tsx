@@ -37,11 +37,11 @@ export default function FavoutiteListe({ user }: Props){
             ) : (
                 <div className="favorites-grid">
                     {favorites.map((fav) => (
-                        <div key={fav} className="favorite-card"
+                        <button key={fav} className="favorite-card"
                             onClick={() => navigate(`/search?selected=${encodeURIComponent(fav)}`)}
                         >
                             {fav}
-                        </div>
+                        </button>
                     ))}
                 </div>
             )}
