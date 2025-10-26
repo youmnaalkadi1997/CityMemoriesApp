@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import {Link, useNavigate, useSearchParams} from "react-router-dom";
 import CitySummary from "./CitySummary.tsx";
-import {Link, useSearchParams} from "react-router-dom";
 
 type CityResult = {
     display_name: string;
@@ -19,6 +19,7 @@ export default function CitySearch(props:Readonly<ProtectedRoutProps>) {
     const [selectedCity, setSelectedCity] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [searchParams] = useSearchParams();
+    const navigate = useNavigate();
 
 
     function fetchCities  (cityName: string)  {
@@ -50,6 +51,19 @@ export default function CitySearch(props:Readonly<ProtectedRoutProps>) {
     }
 
     useEffect(() => {
+        function handleClickOutside(event: MouseEvent) {
+            const target = event.target as HTMLElement;
+            if (!target.closest('.search-container')) {
+                setResults([]);
+            }
+        }
+        document.addEventListener('click', handleClickOutside);
+        return () => {
+            document.removeEventListener('click', handleClickOutside);
+        };
+    }, []);
+
+    useEffect(() => {
         if (query.length < 2) {
             setResults([]);
             return;
@@ -66,6 +80,8 @@ export default function CitySearch(props:Readonly<ProtectedRoutProps>) {
         const selected = searchParams.get("selected");
         if (selected) {
             setSelectedCity(selected);
+        }else {
+            setSelectedCity(null);
         }
     }, [searchParams]);
 
@@ -91,14 +107,15 @@ export default function CitySearch(props:Readonly<ProtectedRoutProps>) {
             {isLoading && <p>Lade Städte...</p>}
 
             <ul>
-                <div className="search-results">
+                <div className={`search-results ${results.length > 0 ? 'visible' : ''}`}>
                 {results.map((city) => (
                     <li key={`${city.lat}-${city.lon}`}>
                         <button
                             className="city-list-item"
                             onClick={() => {
                                 const cityNameOnly = city.display_name.split(",")[0];
-                                setSelectedCity(cityNameOnly);
+                                navigate(`/search?selected=${encodeURIComponent(cityNameOnly)}`);
+                                //setSelectedCity(cityNameOnly);
                                 setResults([]);
                             }}
                         >
@@ -109,11 +126,10 @@ export default function CitySearch(props:Readonly<ProtectedRoutProps>) {
                 </div>
             </ul>
             </div>
-
             {selectedCity && (
                 <>
                     <hr />
-                    <CitySummary cityName={selectedCity}  user={props.user} />
+                    <CitySummary cityName={selectedCity} user={props.user} />
                 </>
             )}
         </div>

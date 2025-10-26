@@ -1,6 +1,6 @@
 import {type ChangeEvent, useEffect, useState} from "react";
 import axios from "axios";
-import {Link} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 
 type WikiData = {
     title: string;
@@ -41,6 +41,7 @@ export default function CitySummary({ cityName, user }: Props) {
     const [image, setImage] = useState<File>();
     const [favMessage, setFavMessage] = useState("");
     const [isFavorite, setIsFavorite] = useState(false);
+    const navigate = useNavigate();
 
 
 
@@ -240,7 +241,7 @@ export default function CitySummary({ cityName, user }: Props) {
                                                     "Bist du sicher, dass du diesen Kommentar löschen möchtest?"
                                                 );
                                                 if (confirmDelete) {
-                                                    window.location.href = `/delete/${c.id}?city=${encodeURIComponent(cityName)}`;
+                                                    navigate(`/delete/${c.id}?city=${encodeURIComponent(cityName)}`);
                                                 }
                                             }}
                                         >
