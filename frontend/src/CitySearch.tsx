@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import {Link, useNavigate, useSearchParams} from "react-router-dom";
+import {Link, useLocation, useNavigate, useSearchParams} from "react-router-dom";
 import CitySummary from "./CitySummary.tsx";
+import { ClipLoader } from "react-spinners";
 
 type CityResult = {
     display_name: string;
@@ -20,6 +21,8 @@ export default function CitySearch(props:Readonly<ProtectedRoutProps>) {
     const [isLoading, setIsLoading] = useState(false);
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
+    const [popularCities, setPopularCities] = useState<{ cityName: string; favoritesCount: number }[]>([]);
+    const location = useLocation();
 
 
     function fetchCities  (cityName: string)  {
@@ -62,6 +65,13 @@ export default function CitySearch(props:Readonly<ProtectedRoutProps>) {
             document.removeEventListener('click', handleClickOutside);
         };
     }, []);
+    useEffect(() => {
+        if (query.length === 0 && !selectedCity) {
+            axios.get("/api/mostPopularCities")
+                .then(res => setPopularCities(res.data))
+                .catch(err => console.error(err));
+        }
+    }, [query , location.pathname , selectedCity]);
 
     useEffect(() => {
         if (query.length < 2) {
@@ -89,7 +99,11 @@ export default function CitySearch(props:Readonly<ProtectedRoutProps>) {
 
         <div className="container city-search">
             <div className="sidebar">
-                <Link to={"/search"}>Suchen</Link>
+                <Link to={"/search"} onClick={() => {
+                    setQuery("");
+                    setSelectedCity(null);
+                    setResults([]);
+                }}>Suchen</Link>
                 <Link to="/favorites">Favoritenliste</Link>
                 <Link to="#" onClick={logout}>Logout</Link>
             </div>
@@ -103,8 +117,30 @@ export default function CitySearch(props:Readonly<ProtectedRoutProps>) {
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
             />
-
-            {isLoading && <p>Lade Städte...</p>}
+                {isLoading && (
+                    <div className="spinner-wrapper">
+                        <ClipLoader color="#36d7b7" size={50} />
+                    </div>
+                )}
+                {query.length === 0 && !selectedCity && popularCities.length > 0 && (
+                    <div className="most-popular">
+                        <h3>Beliebte Städte</h3>
+                        <div className="popular-cities">
+                            {popularCities.map((city) => (
+                                <button
+                                    key={city.cityName}
+                                    className="popular-city-button"
+                                    onClick={() => {
+                                        navigate(`/search?selected=${encodeURIComponent(city.cityName)}`);
+                                        setPopularCities([]);
+                                    }}
+                                >
+                                    {city.cityName} <span className="badge">{city.favoritesCount}</span>
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                )}
 
             <ul>
                 <div className={`search-results ${results.length > 0 ? 'visible' : ''}`}>
@@ -117,6 +153,7 @@ export default function CitySearch(props:Readonly<ProtectedRoutProps>) {
                                 navigate(`/search?selected=${encodeURIComponent(cityNameOnly)}`);
                                 //setSelectedCity(cityNameOnly);
                                 setResults([]);
+                                setPopularCities([]);
                             }}
                         >
                             {city.display_name}

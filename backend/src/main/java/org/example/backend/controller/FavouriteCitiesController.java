@@ -32,4 +32,9 @@ public class FavouriteCitiesController {
     public AppUser removeFavoriteCity(@PathVariable String cityName, @RequestParam String username) {
         return favouriteCitiesService.deleteFromFavourits(cityName,username);
     }
+
+    @GetMapping("/mostPopularCities")
+    public List<Map<String, Object>> getPopularCities() {
+        return favouriteCitiesService.getMostPopularCities(10);
+    }
 }

@@ -5,6 +5,7 @@ import org.example.backend.security.AppUserRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class FavouriteCitiesService {
@@ -51,4 +52,24 @@ public class FavouriteCitiesService {
        }
        return user;
    }
+
+    public List<Map<String, Object>> getMostPopularCities(int limit) {
+        List<AppUser> users = appUserRepository.findAll();
+
+        Map<String, Long> cityCountMap = users.stream()
+                .filter(user -> user.getFavoriteCities() != null)
+                .flatMap(user -> user.getFavoriteCities().stream())
+                .collect(Collectors.groupingBy(city -> city, Collectors.counting()));
+
+        return cityCountMap.entrySet().stream()
+                .sorted(Map.Entry.<String, Long>comparingByValue().reversed())
+                .limit(limit)
+                .map(entry -> {
+                    Map<String, Object> cityMap = new HashMap<>();
+                    cityMap.put("cityName", entry.getKey());
+                    cityMap.put("favoritesCount", entry.getValue());
+                    return cityMap;
+                })
+                .toList();
+    }
 }
