@@ -1,6 +1,8 @@
 package org.example.backend.security;
 
 import lombok.RequiredArgsConstructor;
+import org.example.backend.model.AppUser;
+import org.example.backend.repository.AppUserRepository;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;

@@ -8,6 +8,7 @@ import ProtectedRout from "./ProtectedRout.tsx";
 import EditComment from "./EditComment.tsx";
 import DeleteComment from "./DeleteComment.tsx";
 import FavoutiteListe from "./FavoutiteListe.tsx";
+import Notifications from "./Notifications.tsx";
 
 function App() {
 
@@ -33,6 +34,7 @@ function App() {
                 <Route path="/edit/:id" element={<EditComment />} />
                 <Route path="/delete/:id" element={<DeleteComment />} />
                 <Route path="/favorites" element={<FavoutiteListe user={user}/>} />
+                <Route path="/notifications" element={<Notifications user={user} />} ></Route>
             </Route>
         </Routes>
       </div>

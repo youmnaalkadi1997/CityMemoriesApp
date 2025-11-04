@@ -1,21 +1,24 @@
-/* =========================
-   Allgemeines Styling
-========================= */
 :root {
-    --primary-color: #2e7d32;       /* Hauptfarbe (grün) */
-    --primary-dark: #1b5e20;        /* Dunklerer Grünton für Hover */
-    --secondary-color: #a5d6a7;     /* Hellgrün für Borders */
-    --bg-color: #f0f0f0;            /* Seitenhintergrund */
-    --text-color: #2e7d32;          /* Standard Textfarbe */
-    --white: #ffffff;                /* Weiß */
+    --primary-color: #b45309;
+    --primary-dark: #78350f;
+    --secondary-color: #fbbf24;
+    --bg-color: #fff7ed;
+    --text-color: #5c3a1e;
+    --white: #fffaf3;
     --font-family: 'Segoe UI', sans-serif;
 }
 
 body {
     margin: 0;
     padding: 0;
-    background-color: var(--bg-color);
+    background: linear-gradient(
+            rgba(255, 248, 231, 0.8),
+            rgba(255, 237, 204, 0.9)
+    ),
+    url('/images/jon-tyson-P2aOvMMUJnY-unsplash.jpg') no-repeat center center fixed;
+    background-size: cover;
     color: var(--text-color);
+    box-shadow: inset 0 0 120px rgba(139, 69, 19, 0.3);
 }
 
 #root {
@@ -23,11 +26,13 @@ body {
     margin: 0 auto;
     padding: 2rem;
     width: 100%;
+    background-color: rgba(255, 250, 240, 0.85);
+    border-radius: 16px;
+    box-shadow: 0 4px 25px rgba(120, 60, 10, 0.25);
+    backdrop-filter: blur(4px);
 }
 
-/* =========================
-   Container & Zentrierung
-========================= */
+
 .container {
     display: flex;
     flex-direction: column;
@@ -38,18 +43,20 @@ body {
     text-align: center;
 }
 
-/* =========================
-   Überschriften
-========================= */
 h1, h2, h3, h4 {
     color: var(--primary-color);
     text-align: center;
     margin-bottom: 15px;
 }
+.favorites-title {
+    border: 2px solid #ffedcc;
+    padding: 10px 15px;
+    border-radius: 8px;
+    background-color: #ffedcc;
+    display: inline-block;
+    font-size: 1.5rem;
+}
 
-/* =========================
-   Buttons
-========================= */
 button {
     background-color: var(--primary-color);
     color: var(--white);
@@ -66,9 +73,6 @@ button:hover {
     background-color: var(--primary-dark);
 }
 
-/* =========================
-   Inputs & Textareas
-========================= */
 input[type="text"],
 textarea,
 input[type="password"],
@@ -85,8 +89,8 @@ input[type="email"] {
 }
 
 .input {
-    flex: 1; /* textarea nimmt den ganzen Platz */
-    padding-right: 2.5rem; /* Platz für das Emoji */
+    flex: 1;
+    padding-right: 2.5rem;
 }
 
 input:focus,
@@ -115,11 +119,8 @@ input[type="file"]:hover {
     margin-top: 5px;
 }
 
-/* =========================
-   Kommentar Box
-========================= */
+
 .comment-box {
-    background-color: var(--white);
     border-left: 5px solid var(--secondary-color);
     padding: 15px;
     margin-bottom: 15px;
@@ -131,18 +132,24 @@ input[type="file"]:hover {
 }
 
 .comment-box img {
-    max-width: 100px;
+    max-width: 200px;
+    width: 100%;
     margin-top: 10px;
-    border-radius: 4px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: transform 0.3s ease;
 }
-
-/* =========================
-   City List
-========================= */
+.comment-box img:hover {
+    transform: scale(1.05);
+}
+.comment-box p.updated {
+    color: #888888;
+    font-size: 0.85rem;
+}
 .city-list-item {
-    background-color: #1b5e20;
-    color: var(--white);
-    border: 1px solid var(--secondary-color);
+    background-color: #b45309;
+    color: white;
+    box-shadow: 0 3px 10px rgba(120, 60, 10, 0.25);
     padding: 12px;
     margin: 10px 0;
     cursor: pointer;
@@ -153,15 +160,11 @@ input[type="file"]:hover {
 }
 
 .city-list-item:hover {
-    background-color: var(--white);
-    color: #1b5e20;
+    background-color: #fbbf24;
+    color: #78350f;
+    transform: translateY(-2px);
 }
-
-/* =========================
-   City Summary Box
-========================= */
 .city-summary {
-    background-color: var(--white);
     padding: 20px;
     border-radius: 6px;
     box-shadow: 0 0 10px rgba(0,0,0,0.05);
@@ -169,30 +172,40 @@ input[type="file"]:hover {
     margin-top: 30px;
     width: 100%;
     text-align: left;
+    backdrop-filter: blur(5px);
 }
 
 .city-summary img {
     border-radius: 5px;
     margin-top: 10px;
 }
-
-/* =========================
-   Link Buttons (Edit / Delete)
-========================= */
 .link-buttons {
     display: flex;
     gap: 10px;
     margin-top: 10px;
 }
+.comment-actions {
+    margin-top: 5px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
 
-/* =========================
-   Formulare (z.B. Edit / Comment)
-========================= */
+.comment-actions button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: transform 0.2s ease;
+}
+
+.comment-actions button:hover {
+    transform: scale(1.2);
+}
 .form {
     display: flex;
     flex-direction: column;
     gap: 15px;
-    background-color: var(--white);
     padding: 20px;
     border-radius: 12px;
     box-shadow: 0 4px 15px rgba(0,0,0,0.1);
@@ -205,32 +218,36 @@ form label {
     text-align: left;
     font-weight: bold;
 }
-/* === Sidebar === */
 .sidebar {
     position: fixed;
     left: 0;
     top: 0;
     height: 100%;
     width: 220px;
-    background-color: #2e7d32;
-    color: white;
+    background: linear-gradient(180deg, #b34700, #d97706, #f59e0b);
+    color: #fff8e1;
     display: flex;
     flex-direction: column;
     padding-top: 20px;
-    box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+    box-shadow: 4px 0 15px rgba(139, 69, 19, 0.3);
+    border-right: 2px solid rgba(255, 255, 255, 0.2);
 }
 
 .sidebar a {
-    color: white;
+    color: #fff8e1;
     text-decoration: none;
     padding: 12px 20px;
     margin: 5px 0;
-    border-radius: 4px;
-    transition: background-color 0.3s;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    font-weight: 500;
 }
 
 .sidebar a:hover {
-    background-color: #1b5e20;
+    background-color: rgba(255, 255, 255, 0.2);
+    color: #ffedcc;
+    transform: translateX(5px);
+    box-shadow: 0 2px 6px rgba(139, 69, 19, 0.3);
 }
 
 .main-content {
@@ -246,9 +263,9 @@ form label {
 }
 
 .favorite-card {
-    background-color: #1b5e20;
-    color: #f0f0f0;
-    border-color: #a5d6a7;
+    background-color: #b45309;
+    color: white;
+    box-shadow: 0 3px 10px rgba(120, 60, 10, 0.25);
     padding: 20px;
     border-radius: 8px;
     text-align: center;
@@ -258,15 +275,14 @@ form label {
 }
 
 .favorite-card:hover {
-    background-color: #c8e6c9;
-    color: #1b5e20;
-    border-color: #1b5e20;
-    transform: scale(1.05);
+    background-color: #5e2607;
+    color: white;
+    transform: translateY(-2px);
 }
 
 .textarea-wrapper {
     display: flex;
-    align-items: flex-end; /* Kamera am unteren Rand der textarea */
+    align-items: flex-end;
     position: relative;
 }
 .camera-button {
@@ -281,26 +297,37 @@ form label {
     margin-top: 10px;
     border-radius: 5px;
 }
-.spinner-wrapper {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin: 20px 0;
+
+.like-container .tooltip {
+    display: none;
+    position: absolute;
+    bottom: 120%;
+    left: 0;
+    background-color: rgba(0,0,0,0.8);
+    color: white;
+    padding: 6px 10px;
+    border-radius: 8px;
+    font-size: 13px;
+    white-space: nowrap;
+    z-index: 10;
 }
-/* Login.css */
+
+.like-container:hover .tooltip {
+    display: block;
+}
 .login-container {
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
-    background-color: #f0f0f0;
+    background-color: #fff7ed;
 }
 
 .login-form {
-    background-color: white;
+    background-color: #fff7ed;
     padding: 40px;
     border-radius: 8px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 15px rgba(120, 60, 10, 0.2);
     text-align: center;
     width: 300px;
 }
@@ -308,18 +335,18 @@ form label {
 .login-form h2 {
     margin-bottom: 20px;
     font-size: 24px;
-    color: #1b5e20;
+    color: #78350f;
 }
 
 .login-form p {
     margin-bottom: 30px;
-    color: #1b5e20;
+    color: #78350f;
 }
 
 .github-login-button {
-    background-color: #1b5e20;
+    background-color: #b45309;
     color: white;
-    border-color: #1b5e20;
+    box-shadow: 0 3px 10px rgba(120, 60, 10, 0.25);
     padding: 12px 20px;
     font-size: 16px;
     width: 100%;
@@ -328,13 +355,13 @@ form label {
     justify-content: center;
     align-items: center;
     border-radius: 5px;
-    transition: background-color 0.3s;
+    transition: all 0.3s ease;
 }
 
 .github-login-button:hover {
-    background-color: #c8e6c9;
-    color: #1b5e20;
-    border-color: #1b5e20;
+    background-color: #fbbf24;
+    color: #78350f;
+    transform: translateY(-2px);
 }
 
 .github-icon {
@@ -343,7 +370,6 @@ form label {
 }
 .most-popular {
     margin-top: 25px;
-    background-color: var(--white);
     border: 1px solid var(--secondary-color);
     border-radius: 10px;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
@@ -392,4 +418,306 @@ form label {
     padding: 3px 8px;
     border-radius: 12px;
     font-size: 0.8rem;
+}
+
+.popular-cities-row {
+    margin-top: 40px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    justify-content: center;
+}
+
+@media (max-width: 900px) {
+    .popular-cities-row {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 600px) {
+    .popular-cities-row {
+        grid-template-columns: 1fr;
+    }
+}
+
+.popular-city-card {
+    background-color: #fff8e1;
+    box-shadow: 0 2px 8px rgba(120, 60, 10, 0.15);
+    border-radius: 12px;
+    width: 280px;
+    text-align: center;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.popular-city-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 15px rgba(120, 60, 10, 0.25);
+}
+
+.popular-city-card img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+}
+
+.city-card-info {
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+}
+
+.city-card-info h4 {
+    margin: 0;
+    color: var(--primary-color);
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+.city-card-info .likes {
+    color: #d32f2f;
+    font-weight: bold;
+}
+.city-card-info .comments {
+    color: #1976d2;
+    font-weight: bold;
+}
+
+.city-search {
+    align-items: center;
+    justify-content: flex-start;
+    padding-top: 50px;
+}
+
+.search-container {
+    width: 100%;
+    max-width: 600px;
+    margin-bottom: 40px;
+    position: relative;
+}
+.search-input {
+    width: 100%;
+    max-width: 600px;
+    padding: 12px 15px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    box-sizing: border-box;
+    background-color: #fafafa;
+    height: 46px;
+}
+
+.search-input:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.1);
+    background-color: #fff;
+}
+
+.spinner-wrapper {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+.comment-box,
+.form,
+.most-popular,
+.city-summary {
+    background-color: rgba(255, 249, 237, 0.9);
+    box-shadow: 0 4px 15px rgba(120, 60, 10, 0.2);
+}
+.search-history {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    max-height: 250px;
+    overflow-y: auto;
+    background-color: #fff8e1;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    z-index: 50;
+}
+
+.search-history li {
+    padding: 8px 12px;
+    cursor: pointer;
+}
+
+.search-history li:hover {
+    background-color: #ffd699;
+}
+.search-results {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    max-height: 250px;
+    overflow-y: auto;
+    background-color: #fff8e1;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    z-index: 60;
+    margin-top: 4px;
+    list-style: none;
+    padding: 0;
+}
+
+.search-results li {
+    padding: 8px 12px;
+    cursor: pointer;
+}
+
+.search-results li:hover {
+    background-color: #ffd699;
+}
+.favorite-card.add-group {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 2rem;
+    background-color: #eee;
+    cursor: pointer;
+}
+.modal-backdrop {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: rgba(0,0,0,0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    min-width: 300px;
+    max-width: 400px;
+    width: 90%;
+}
+.modal-content input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 8px;
+    font-size: 1rem;
+}
+.highlight {
+    box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.4);
+    transition: box-shadow 0.5s;
+}
+.notifications {
+    max-width: 450px;
+    margin: 20px auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    font-family: Arial, sans-serif;
+}
+
+.notifications-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 1.2rem;
+    font-weight: bold;
+    padding: 10px 12px;
+    background-color: #f5f5f5;
+    border-radius: 8px;
+}
+
+.notifications-header span {
+    background-color: var(--primary-color);
+    color: white;
+    font-size: 0.8rem;
+    padding: 2px 6px;
+    border-radius: 12px;
+}
+
+.notification-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 350px;
+    overflow-y: auto;
+}
+
+.notification-card {
+    background-color: #fff;
+    padding: 10px 12px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    cursor: pointer;
+    transition: transform 0.1s ease, background-color 0.2s ease;
+}
+
+.notification-card.unread {
+    border-left: 4px solid #ff4d4f;
+    background-color: #fff8f0;
+    font-weight: bold;
+}
+
+.notification-card:hover {
+    background-color: #f0f0f0;
+    transform: translateY(-2px);
+}
+
+.notification-message {
+    margin: 0;
+}
+
+.notification-date {
+    font-size: 0.75rem;
+    color: #888;
+    margin-top: 4px;
+}
+.notification-link {
+    position: relative;
+    display: inline-block;
+    padding-right: 10px;
+}
+
+.badgee {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background-color: red;
+    color: white;
+    font-weight: bold;
+    font-size: 0.7rem;
+    width: 18px;
+    height: 18px;
+    text-align: center;
+    line-height: 18px;
+    border-radius: 50%;
+    box-shadow: 0 0 2px rgba(0,0,0,0.5);
+}
+.separator {
+    border: none;
+    height: 3px;
+    background-color: #8b4513;
+    margin: 15px 0;
+}
+.content {
+    margin-left: 240px;
+    padding: 20px;
+}
+.new-group-btn {
+    padding: 10px 15px;
+    font-size: 1rem;
+    background-color: #b34700;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.new-group-btn:hover {
+    background-color: #d97706;
 }

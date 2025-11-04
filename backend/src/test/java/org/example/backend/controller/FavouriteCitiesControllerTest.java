@@ -1,7 +1,7 @@
 package org.example.backend.controller;
 
-import org.example.backend.security.AppUser;
-import org.example.backend.security.AppUserRepository;
+import org.example.backend.model.AppUser;
+import org.example.backend.repository.AppUserRepository;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

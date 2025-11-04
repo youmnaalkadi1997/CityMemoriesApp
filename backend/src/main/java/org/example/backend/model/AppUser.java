@@ -1,4 +1,4 @@
-package org.example.backend.security;
+package org.example.backend.model;
 
 import lombok.Builder;
 import lombok.Data;
@@ -13,4 +13,6 @@ public class AppUser {
     private String email;
     private String role;
     private List<String> favoriteCities;
+    private List<String> searchHistory;
+    private List<FavoriteGroup> favoriteGroups;
 }

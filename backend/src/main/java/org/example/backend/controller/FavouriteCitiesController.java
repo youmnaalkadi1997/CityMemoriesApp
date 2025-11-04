@@ -1,6 +1,6 @@
 package org.example.backend.controller;
 
-import org.example.backend.security.AppUser;
+import org.example.backend.model.AppUser;
 import org.example.backend.service.FavouriteCitiesService;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,5 +36,15 @@ public class FavouriteCitiesController {
     @GetMapping("/mostPopularCities")
     public List<Map<String, Object>> getPopularCities() {
         return favouriteCitiesService.getMostPopularCities(10);
+    }
+    @GetMapping("/searchHistory/{userId}")
+    public List<String> getSearchHistory(@PathVariable String userId) {
+        return  favouriteCitiesService.getSearchHistory(userId);
+    }
+
+    @PostMapping("/searchHistory/{userId}")
+    public List<String> addSearchEntry(@PathVariable String userId,
+                                       @RequestBody String cityName) {
+        return favouriteCitiesService.addSearchEntry(userId, cityName);
     }
 }

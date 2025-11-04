@@ -62,4 +62,14 @@ public class GlobalExceptionHandler {
 
         return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorMessage> handleGenericException(Exception ex) {
+        ErrorMessage error = ErrorMessage.builder()
+                .message("Ein unerwarteter Fehler ist aufgetreten: " + ex.getMessage())
+                .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                .timestamp(LocalDateTime.now())
+                .build();
+
+        return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 }

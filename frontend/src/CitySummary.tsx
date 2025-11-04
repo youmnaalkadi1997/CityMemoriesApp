@@ -1,6 +1,7 @@
 import {type ChangeEvent, useEffect, useState} from "react";
 import axios from "axios";
-import {Link, useNavigate} from "react-router-dom";
+import {Link, useLocation, useNavigate} from "react-router-dom";
+import { FaHeart, FaRegHeart } from "react-icons/fa";
 
 type WikiData = {
     title: string;
@@ -25,6 +26,14 @@ type CityComment = {
     imageUrl?: string;
     createdAt: string;
     updatedAt: string;
+    likesCount: number;
+    likedByUsernames: string[];
+    replies?: {
+        id: string;
+        username: string;
+        reply: string;
+        createdAt: string;
+    }[];
 };
 
 type Props = {
@@ -42,6 +51,10 @@ export default function CitySummary({ cityName, user }: Props) {
     const [favMessage, setFavMessage] = useState("");
     const [isFavorite, setIsFavorite] = useState(false);
     const navigate = useNavigate();
+    const [replyTexts, setReplyTexts] = useState<{ [key: string]: string }>({});
+    const location = useLocation();
+    const [fileName, setFileName] = useState<string>("");
+
 
 
 
@@ -87,6 +100,16 @@ export default function CitySummary({ cityName, user }: Props) {
             .catch(err => console.error(err));
     }, [cityName, user]);
 
+    useEffect(() => {
+        if (!location.hash) return;
+        const el = document.querySelector(location.hash);
+        if (el) {
+            el.scrollIntoView({ behavior: "smooth", block: "center" });
+            el.classList.add("highlight");
+            setTimeout(() => el.classList.remove("highlight"), 3000);
+        }
+    }, [location.hash, comments]);
+
     function addComment(event?: React.FormEvent<HTMLFormElement>) {
         event?.preventDefault();
         const data = new FormData();
@@ -125,6 +148,7 @@ export default function CitySummary({ cityName, user }: Props) {
     function onFileChange(event: ChangeEvent<HTMLInputElement>) {
         if (event.target.files) {
             setImage(event.target.files[0])
+            setFileName (event.target.files[0].name)
         }
     }
 
@@ -160,14 +184,59 @@ export default function CitySummary({ cityName, user }: Props) {
         }
     }
 
+    function toggleLikeComment(commentId: string) {
+        if (!user) {
+            alert("Bitte einloggen, um zu liken.");
+            return;
+        }
+
+        axios.post(`/api/comment/${commentId}/like`, null, { params: { username: user } })
+            .then(res => {
+                setComments(prev =>
+                    prev.map(com => com.id === commentId
+                        ? { ...com, likesCount: res.data.likesCount, likedByUsernames: res.data.likedByUsernames }
+                        : com
+                    )
+                );
+            })
+            .catch(err => {
+                console.error(err);
+            });
+    }
+
+    function addReply(commentId: string) {
+        if (!user) {
+            alert("Bitte einloggen, um zu antworten.");
+            return;
+        }
+        const text = replyTexts[commentId];
+        if (!text || text.trim() === "") return;
+
+        axios.post(`/api/comment/${commentId}/reply`, {
+            username: user,
+            reply: text
+        })
+            .then(res => {
+                    setComments(prev =>
+                    prev.map(c => c.id === commentId ? res.data : c)
+                );
+                setReplyTexts(prev => ({ ...prev, [commentId]: "" }));
+            })
+            .catch(err => console.error(err));
+    }
+
     if (loading) return <p>Lade Beschreibung...</p>;
     if (!data) return <p>Keine Beschreibung gefunden.</p>;
 
     return (
         <div className="city-summary">
             <h3>{data.title}</h3>
-            <button className="button" onClick={toggleFavorite}>
-                {isFavorite ? "In Favoriten" : "Zu Favoriten hinzufügen"}
+            <button onClick={toggleFavorite}>
+                {isFavorite ? (
+                    <FaHeart style={{ color: "red", fontSize: "1.5rem" }} />
+                ) : (
+                    <FaRegHeart style={{ color: "gray", fontSize: "1.5rem" }} />
+                )}
             </button>
             {favMessage && <p>{favMessage}</p>}
 
@@ -204,6 +273,9 @@ export default function CitySummary({ cityName, user }: Props) {
                 />
                 <label htmlFor="fileInput" className="camera-button">📷</label>
                 </div>
+                {fileName && (
+                    <p className="file-name">📎 {fileName}</p>
+                )}
                 <button className="button" type="submit">Senden</button>
                 {message && (
                     <p>
@@ -217,43 +289,154 @@ export default function CitySummary({ cityName, user }: Props) {
                     <p>Keine Kommentare für diese Stadt.</p>
                 ) : (
                     <ul>
-                        {comments.map((c) => (
-                            <li key={c.id} className="comment-box">
-                                <strong>{c.username}</strong> schrieb am {new Date(c.createdAt).toLocaleString()}:
-                                <p>{c.comment}</p>
-                                {c.updatedAt && c.updatedAt !== c.createdAt && (
-                                    <p>
-                                        Zuletzt bearbeitet am: {new Date(c.updatedAt).toLocaleString()}
-                                    </p>
-                                )}
+                        {comments.map(c => {
 
-                                {c.imageUrl && <img src={c.imageUrl} alt="Bild zur Stadt" />}
+                            const likedByUser = (c.likedByUsernames || []).includes(user || "");
 
-                                {user === c.username && (
+                            return (
+                                <li key={c.id} id={`comment-${c.id}`}  className="comment-box">
+                                    <strong>{c.username}</strong> schrieb am {new Date(c.createdAt).toLocaleString()}:
+                                    <p>{c.comment}</p>
+
+                                    {c.updatedAt && c.updatedAt !== c.createdAt && (
+                                        <p style={{ color: "grey" }}>
+                                            Zuletzt bearbeitet am: {new Date(c.updatedAt).toLocaleString()}
+                                        </p>
+                                    )}
+
+                                    {c.imageUrl && (
+                                        <img
+                                            src={c.imageUrl}
+                                            alt="Bild zur Stadt"
+                                            style={{ maxWidth: "200px", cursor: "pointer" }}
+                                            onClick={() => window.open(c.imageUrl, "_blank")}
+                                        />
+                                    )}
+
                                     <div className="link-buttons">
-                                        <Link to={`/edit/${c.id}?city=${encodeURIComponent(cityName)}`}>
-                                            <button>Bearbeiten</button>
-                                        </Link>
-                                        <button
-                                            onClick={(e) => {
-                                                e.preventDefault();
-                                                const confirmDelete = window.confirm(
-                                                    "Bist du sicher, dass du diesen Kommentar löschen möchtest?"
-                                                );
-                                                if (confirmDelete) {
-                                                    navigate(`/delete/${c.id}?city=${encodeURIComponent(cityName)}`);
-                                                }
-                                            }}
+                                        {user === c.username && (
+                                            <>
+                                                <Link to={`/edit/${c.id}?city=${encodeURIComponent(cityName)}`}>
+                                                    <button>✏️</button>
+                                                </Link>
+                                                <button onClick={() => {
+                                                    const confirmDelete = window.confirm("Willst du diesen Kommentar wirklich löschen?");
+                                                    if(confirmDelete) navigate(`/delete/${c.id}?city=${encodeURIComponent(cityName)}`);
+                                                }}>🗑️</button>
+                                            </>
+                                        )}
+
+                                        <div
+                                            className="like-container"
+                                            style={{ position: "relative", display: "inline-block" }}
                                         >
-                                            Löschen
-                                        </button>
+                                            <button
+                                                onClick={() => toggleLikeComment(c.id)}
+                                                style={{
+                                                    color: likedByUser ? "red" : "grey",
+                                                    fontWeight: "bold",
+                                                    marginLeft: "10px"
+                                                }}
+                                            >
+                                                ❤️ {c.likesCount ?? 0}
+                                            </button>
+                                            {c.likedByUsernames && c.likedByUsernames.length > 0 && (
+                                                <div className="tooltip">
+                                                    {user && c.likedByUsernames.includes(user)
+                                                        ? c.likedByUsernames.length === 1
+                                                            ? "du"
+                                                            : `du und ${c.likedByUsernames.length - 1} andere`
+                                                        : c.likedByUsernames.slice(0, 3).join(", ") +
+                                                        (c.likedByUsernames.length > 3
+                                                            ? ` und ${c.likedByUsernames.length - 3} andere`
+                                                            : "")
+                                                    }
+                                                </div>
+                                            )}
+                                        </div>
+
+
                                     </div>
-                                )}
-                            </li>
-                        ))}
+
+                                    <div style={{ marginTop: "8px" }}>
+                                        <button
+                                            onClick={() =>
+                                                setReplyTexts(prev => {
+                                                    const newState = { ...prev };
+
+                                                    if (newState[c.id] !== undefined) {
+                                                        delete newState[c.id];
+                                                    } else {
+                                                        newState[c.id] = "";
+                                                    }
+
+                                                    return newState;
+                                                })
+                                            }
+                                        >
+                                            💬
+                                        </button>
+
+                                        {replyTexts[c.id] !== undefined && (
+                                            <div style={{ marginTop: "6px" }}>
+                                                <input
+                                                    type="text"
+                                                    placeholder="Schreibe hier deine Antwort…"
+                                                    value={replyTexts[c.id]}
+                                                    onChange={(e) =>
+                                                        setReplyTexts(prev => ({ ...prev, [c.id]: e.target.value }))
+                                                    }
+                                                    style={{
+                                                        padding: "6px",
+                                                        borderRadius: "6px",
+                                                        border: "1px solid #ccc",
+                                                        width: "70%",
+                                                        marginRight: "5px"
+                                                    }}
+                                                />
+                                                <button onClick={() => addReply(c.id)}>Senden</button>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {c.replies && c.replies.length > 0 && (
+                                        <ul style={{ marginLeft: "20px", marginTop: "10px" }}>
+                                            {c.replies.map(r => (
+                                                <li key={r.id} style={{ borderLeft: "2px solid #ddd", paddingLeft: "8px" }}>
+                                                    <strong>{r.username}</strong>: {r.reply}
+                                                    <p style={{ fontSize: "12px", color: "gray" }}>
+                                                        {new Date(r.createdAt).toLocaleString()}
+                                                    </p>
+                                                    {user === r.username && (
+                                                        <button
+                                                            style={{ marginLeft: "10px" }}
+                                                            onClick={() => {
+                                                                const confirmDelete = window.confirm("Willst du diese Antwort wirklich löschen?");
+                                                                if (!confirmDelete) return;
+
+                                                                axios.delete(`/api/comment/${c.id}/reply/${r.id}`, { params: { username: user } })
+                                                                    .then(res => {
+                                                                        setComments(prev => prev.map(com => com.id === c.id ? res.data : com));
+                                                                    })
+                                                                    .catch(err => console.error(err));
+                                                            }}
+                                                        >
+                                                            🗑️ Löschen
+                                                        </button>
+                                                    )}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    )}
+
+                                </li>
+                            );
+                        })}
+
                     </ul>
                 )}
             </div>
+
 
         </div>
     );

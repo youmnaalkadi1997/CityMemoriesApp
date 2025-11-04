@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Builder
 @Data
@@ -23,4 +24,7 @@ public class CityComment {
     private String imageUrl;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private Integer likesCount ;
+    private List<String> likedByUsers;
+    private List<Reply> replies;
 }

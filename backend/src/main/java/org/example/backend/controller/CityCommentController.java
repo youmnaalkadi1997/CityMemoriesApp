@@ -3,6 +3,7 @@ package org.example.backend.controller;
 import jakarta.validation.Valid;
 import org.example.backend.model.CityComment;
 import org.example.backend.model.CityCommentDTO;
+import org.example.backend.model.ReplyDTO;
 import org.example.backend.service.CityCommentService;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -61,5 +62,25 @@ public class CityCommentController {
     @DeleteMapping("/comment/{id}")
     public void deleteComment(@PathVariable String id){
         cityCommentService.deleteCommentById(id);
+    }
+
+    @PostMapping("/comment/{commentId}/like")
+    public CityComment likeComment(@PathVariable String commentId,
+                                   @RequestParam String username) {
+        return cityCommentService.toggleLike(commentId, username);
+    }
+    @PostMapping("/comment/{commentId}/reply")
+    public CityComment addReply(
+            @PathVariable String commentId,
+            @Valid @RequestBody ReplyDTO replyRequest
+    ) {
+        return cityCommentService.addReply(commentId, replyRequest);
+    }
+    @DeleteMapping("/comment/{commentId}/reply/{replyId}")
+    public CityComment deleteReply(
+            @PathVariable String commentId,
+            @PathVariable String replyId,
+            @RequestParam String username) {
+        return cityCommentService.deleteReply(commentId, replyId, username);
     }
 }
