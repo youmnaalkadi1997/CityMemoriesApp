@@ -34,17 +34,24 @@ export default function Notifications({ user }: Props) {
             .catch(console.error);
     }, [username]);
 
+    function markNotificationAsRead(notificationId: string) {
+        setNotifications(prev =>
+            prev.map(n =>
+                n.id === notificationId ? { ...n, read: true } : n
+            )
+        );
+        setUnreadCount(prev => prev - 1);
+    }
+
     function handleClick(notification: NotificationType) {
-        axios.post(`/api/notifications/${notification.id}/read`)
-            .then(() => {
-                setNotifications(prev =>
-                    prev.map(n => n.id === notification.id ? { ...n, read: true } : n)
-                );
-                setUnreadCount(prev => prev - 1);
-            })
+        axios
+            .post(`/api/notifications/${notification.id}/read`)
+            .then(() => markNotificationAsRead(notification.id))
             .catch(console.error);
 
-        navigate(`/search?selected=${encodeURIComponent(notification.targetCity)}#comment-${notification.commentId}`);
+        navigate(
+            `/search?selected=${encodeURIComponent(notification.targetCity)}#comment-${notification.commentId}`
+        );
     }
 
     return (

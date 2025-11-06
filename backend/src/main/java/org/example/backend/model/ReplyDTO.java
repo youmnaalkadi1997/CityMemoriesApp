@@ -13,5 +13,5 @@ public class ReplyDTO {
     private String username;
 
     @NotBlank(message = "Antwort darf nicht leer sein")
-    private String reply;
+    private String text;
 }

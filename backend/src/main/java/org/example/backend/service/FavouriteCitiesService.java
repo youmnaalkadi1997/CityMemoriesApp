@@ -16,6 +16,9 @@ public class FavouriteCitiesService {
 
     private final CityCommentRepository cityCommentRepository;
 
+    private static final String USER_NOT_FOUND_MESSAGE = "Kein User gefunden für: ";
+
+
     public FavouriteCitiesService(AppUserRepository appUserRepository,  CityCommentRepository cityCommentRepository) {
         this.appUserRepository = appUserRepository;
         this.cityCommentRepository = cityCommentRepository;
@@ -32,7 +35,7 @@ public class FavouriteCitiesService {
 
         AppUser user = appUserRepository.findByUsername(username);
         if (user == null) {
-            throw new NoSuchElementException("Kein User gefunden für: " + username);
+            throw new NoSuchElementException(USER_NOT_FOUND_MESSAGE + username);
         }
         if (user.getFavoriteCities() == null) {
             user.setFavoriteCities(new ArrayList<>());
@@ -46,7 +49,7 @@ public class FavouriteCitiesService {
 
     public AppUser deleteFromFavourits(String cityName, String username) {
         AppUser user = Optional.ofNullable(appUserRepository.findByUsername(username))
-                .orElseThrow(() -> new NoSuchElementException("Kein User gefunden für: " + username));
+                .orElseThrow(() -> new NoSuchElementException(USER_NOT_FOUND_MESSAGE + username));
 
         if (user.getFavoriteCities() != null) {
             user.getFavoriteCities().removeIf(city -> city.equals(cityName));
@@ -98,14 +101,14 @@ public class FavouriteCitiesService {
 
     public List<String> getSearchHistory(String username) {
         AppUser user = Optional.ofNullable(appUserRepository.findByUsername(username))
-                .orElseThrow(() -> new NoSuchElementException("Kein User gefunden für: " + username));
+                .orElseThrow(() -> new NoSuchElementException(USER_NOT_FOUND_MESSAGE + username));
 
         return Optional.ofNullable(user.getSearchHistory()).orElse(new ArrayList<>());
     }
 
     public List<String> addSearchEntry(String username, String cityName) {
         AppUser user = Optional.ofNullable(appUserRepository.findByUsername(username))
-                .orElseThrow(() -> new NoSuchElementException("Kein User gefunden für: " + username));
+                .orElseThrow(() -> new NoSuchElementException(USER_NOT_FOUND_MESSAGE + username));
 
         List<String> history = Optional.ofNullable(user.getSearchHistory())
                 .orElse(new ArrayList<>());

@@ -256,7 +256,7 @@ class CityCommentServiceTest {
 
         ReplyDTO replyDTO = ReplyDTO.builder()
                 .username("user1")
-                .reply("Test reply")
+                .text("Test reply")
                 .build();
 
         when(mockRepo.findById("1")).thenReturn(Optional.empty());
@@ -285,13 +285,13 @@ class CityCommentServiceTest {
 
         ReplyDTO replyDTO = ReplyDTO.builder()
                 .username("user1")
-                .reply("Test reply")
+                .text("Test reply")
                 .build();
 
         CityComment result = service.addReply("1", replyDTO);
 
         assertThat(result.getReplies()).hasSize(1);
-        assertThat(result.getReplies().get(0).getReply()).isEqualTo("Test reply");
+        assertThat(result.getReplies().get(0).getText()).isEqualTo("Test reply");
         assertThat(result.getReplies().get(0).getUsername()).isEqualTo("user1");
 
         verify(mockNotificationService).createNotification(
@@ -325,13 +325,13 @@ class CityCommentServiceTest {
 
         ReplyDTO replyDTO = ReplyDTO.builder()
                 .username("user1")
-                .reply("Author reply")
+                .text("Author reply")
                 .build();
 
         CityComment result = service.addReply("1", replyDTO);
 
         assertThat(result.getReplies()).hasSize(1);
-        assertThat(result.getReplies().get(0).getReply()).isEqualTo("Author reply");
+        assertThat(result.getReplies().get(0).getText()).isEqualTo("Author reply");
         assertThat(result.getReplies().get(0).getUsername()).isEqualTo("user1");
 
         verify(mockNotificationService, never()).createNotification(any(), any(), any(), any(), any(), any());
@@ -361,7 +361,7 @@ class CityCommentServiceTest {
         Reply reply = Reply.builder()
                 .id("reply1")
                 .username("user1")
-                .reply("Test reply")
+                .text("Test reply")
                 .build();
 
         CityComment comment = CityComment.builder()
@@ -388,7 +388,7 @@ class CityCommentServiceTest {
         Reply reply = Reply.builder()
                 .id("reply1")
                 .username("ownerUser")
-                .reply("Test reply")
+                .text("Test reply")
                 .build();
 
         CityComment comment = CityComment.builder()

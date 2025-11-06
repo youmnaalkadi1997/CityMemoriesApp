@@ -10,6 +10,6 @@ import java.time.LocalDateTime;
 public class Reply {
     private String id;
     private String username;
-    private String reply;
+    private String text;
     private LocalDateTime createdAt;
 }

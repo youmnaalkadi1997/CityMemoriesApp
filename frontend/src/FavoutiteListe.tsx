@@ -57,37 +57,59 @@ export default function FavoutiteListe({ user }: Props) {
         );
     }
 
+    function updateGroupCities(
+        groups: FavoriteGroup[],
+        selectedGroupName: string,
+        selectedCities: string[]
+    ): FavoriteGroup[] {
+        return groups.map(g =>
+            g.name === selectedGroupName ? { ...g, cities: selectedCities } : g
+        );
+    }
+
+    function handleSaveCitiesSuccess() {
+        if (!selectedGroup) return;
+        setGroups(prev => updateGroupCities(prev, selectedGroup.name, selectedCities));
+        setSelectedGroup(null);
+        setSelectedCities([]);
+    }
+
+    function handleSaveCitiesError(error: unknown) {
+        console.error(error);
+    }
+
     function saveCities() {
         if (!user || !selectedGroup) return;
 
         const promises = selectedCities
             .filter(city => !selectedGroup.cities.includes(city))
-            .map(city => axios.post("/api/addCity", null, { params: { username: user, groupName: selectedGroup.name, city } }));
+            .map(city =>
+                axios.post("/api/addCity", null, {
+                    params: { username: user, groupName: selectedGroup.name, city },
+                })
+            );
 
         Promise.all(promises)
-            .then(() => {
-                setGroups(prev =>
-                    prev.map(g =>
-                        g.name === selectedGroup.name
-                            ? { ...g, cities: selectedCities }
-                            : g
-                    )
-                );
-                setSelectedGroup(null);
-                setSelectedCities([]);
-            })
-            .catch(err => console.error(err));
+            .then(handleSaveCitiesSuccess)
+            .catch(handleSaveCitiesError);
+    }
+
+    function handleDeleteGroupSuccess(groupName: string) {
+        setGroups(prev => prev.filter(g => g.name !== groupName));
+    }
+
+    function handleDeleteGroupError(error: unknown) {
+        console.error(error);
     }
 
     function deleteGroup(groupName: string) {
         if (!user) return;
         if (!window.confirm("Willst du diese Gruppe wirklich löschen?")) return;
 
-        axios.delete("/api/groups", { params: { username: user, groupName } })
-            .then(() => {
-                setGroups(prev => prev.filter(g => g.name !== groupName));
-            })
-            .catch(err => console.error(err));
+        axios
+            .delete("/api/groups", { params: { username: user, groupName } })
+            .then(() => handleDeleteGroupSuccess(groupName))
+            .catch(handleDeleteGroupError);
     }
 
     return (

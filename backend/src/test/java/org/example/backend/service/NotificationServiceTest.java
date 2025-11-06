@@ -18,7 +18,6 @@ class NotificationServiceTest {
     @Test
     void createNotification_shouldSaveNotification() {
         NotificationRepository mockRepo = mock(NotificationRepository.class);
-        //SimpMessagingTemplate mockTemplate = mock(SimpMessagingTemplate.class);
 
         when(mockRepo.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
 

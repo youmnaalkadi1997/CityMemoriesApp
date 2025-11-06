@@ -31,7 +31,7 @@ type CityComment = {
     replies?: {
         id: string;
         username: string;
-        reply: string;
+        text: string;
         createdAt: string;
     }[];
 };
@@ -184,24 +184,47 @@ export default function CitySummary({ cityName, user }: Props) {
         }
     }
 
+    function updateCommentLikes(
+        comments: CityComment[],
+        commentId: string,
+        data: { likesCount: number; likedByUsernames: string[] }
+    ): CityComment[] {
+        return comments.map(com =>
+            com.id === commentId
+                ? { ...com, likesCount: data.likesCount, likedByUsernames: data.likedByUsernames }
+                : com
+        );
+    }
+
+    function updateCommentWithReply(
+        comments: CityComment[],
+        commentId: string,
+        newComment: CityComment
+    ): CityComment[] {
+        return comments.map(c => (c.id === commentId ? newComment : c));
+    }
+
     function toggleLikeComment(commentId: string) {
         if (!user) {
             alert("Bitte einloggen, um zu liken.");
             return;
         }
 
-        axios.post(`/api/comment/${commentId}/like`, null, { params: { username: user } })
+        axios
+            .post(`/api/comment/${commentId}/like`, null, { params: { username: user } })
             .then(res => {
-                setComments(prev =>
-                    prev.map(com => com.id === commentId
-                        ? { ...com, likesCount: res.data.likesCount, likedByUsernames: res.data.likedByUsernames }
-                        : com
-                    )
-                );
+                setComments(prev => updateCommentLikes(prev, commentId, res.data));
             })
-            .catch(err => {
-                console.error(err);
-            });
+            .catch(console.error);
+    }
+
+    function handleReplySuccess(commentId: string, newComment: CityComment) {
+        setComments(prev => updateCommentWithReply(prev, commentId, newComment));
+        setReplyTexts(prev => ({ ...prev, [commentId]: "" }));
+    }
+
+    function handleReplyError(error: unknown) {
+        console.error(error);
     }
 
     function addReply(commentId: string) {
@@ -209,21 +232,19 @@ export default function CitySummary({ cityName, user }: Props) {
             alert("Bitte einloggen, um zu antworten.");
             return;
         }
+
         const text = replyTexts[commentId];
         if (!text || text.trim() === "") return;
 
-        axios.post(`/api/comment/${commentId}/reply`, {
-            username: user,
-            reply: text
-        })
-            .then(res => {
-                    setComments(prev =>
-                    prev.map(c => c.id === commentId ? res.data : c)
-                );
-                setReplyTexts(prev => ({ ...prev, [commentId]: "" }));
+        axios
+            .post(`/api/comment/${commentId}/reply`, {
+                username: user,
+                text: text,
             })
-            .catch(err => console.error(err));
+            .then(res => handleReplySuccess(commentId, res.data))
+            .catch(handleReplyError);
     }
+
 
     if (loading) return <p>Lade Beschreibung...</p>;
     if (!data) return <p>Keine Beschreibung gefunden.</p>;
@@ -403,7 +424,7 @@ export default function CitySummary({ cityName, user }: Props) {
                                         <ul style={{ marginLeft: "20px", marginTop: "10px" }}>
                                             {c.replies.map(r => (
                                                 <li key={r.id} style={{ borderLeft: "2px solid #ddd", paddingLeft: "8px" }}>
-                                                    <strong>{r.username}</strong>: {r.reply}
+                                                    <strong>{r.username}</strong>: {r.text}
                                                     <p style={{ fontSize: "12px", color: "gray" }}>
                                                         {new Date(r.createdAt).toLocaleString()}
                                                     </p>

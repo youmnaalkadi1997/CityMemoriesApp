@@ -144,7 +144,7 @@ public class CityCommentService {
         Reply reply = Reply.builder()
                 .id(UUID.randomUUID().toString())
                 .username(replyDTO.getUsername())
-                .reply(replyDTO.getReply())
+                .text(replyDTO.getText())
                 .createdAt(LocalDateTime.now())
                 .build();
 
