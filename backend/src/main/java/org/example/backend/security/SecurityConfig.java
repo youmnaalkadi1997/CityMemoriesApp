@@ -20,7 +20,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf
                         // CSRF is disabled for API endpoints because authentication is handled via OAuth2 login with secure cookies
                         .ignoringRequestMatchers("/api/**")
-                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                        .csrfTokenRepository(new CookieCsrfTokenRepository())
                 )
                 .authorizeHttpRequests(a -> a
                         .requestMatchers(HttpMethod.GET,"/api/comment/{cityName}").authenticated()
