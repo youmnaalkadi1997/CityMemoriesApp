@@ -41,6 +41,10 @@ type Props = {
     readonly  user: string |undefined|null
 };
 
+function handleReplyError(error: unknown) {
+    console.error(error);
+}
+
 export default function CitySummary({ cityName, user }: Props) {
     const [data, setData] = useState<WikiData | null>(null);
     const [loading, setLoading] = useState(false);
@@ -223,9 +227,7 @@ export default function CitySummary({ cityName, user }: Props) {
         setReplyTexts(prev => ({ ...prev, [commentId]: "" }));
     }
 
-    function handleReplyError(error: unknown) {
-        console.error(error);
-    }
+
 
     function addReply(commentId: string) {
         if (!user) {

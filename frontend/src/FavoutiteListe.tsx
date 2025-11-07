@@ -7,10 +7,17 @@ type FavoriteGroup = {
     cities: string[];
 };
 
+
 type Props = {
-    user: string | undefined | null;
+    readonly user: string | undefined | null;
 };
 
+function handleSaveCitiesError(error: unknown) {
+    console.error(error);
+}
+function handleDeleteGroupError(error: unknown) {
+    console.error(error);
+}
 export default function FavoutiteListe({ user }: Props) {
     const [favorites, setFavorites] = useState<string[]>([]);
     const [groups, setGroups] = useState<FavoriteGroup[]>([]);
@@ -74,9 +81,6 @@ export default function FavoutiteListe({ user }: Props) {
         setSelectedCities([]);
     }
 
-    function handleSaveCitiesError(error: unknown) {
-        console.error(error);
-    }
 
     function saveCities() {
         if (!user || !selectedGroup) return;
@@ -96,10 +100,6 @@ export default function FavoutiteListe({ user }: Props) {
 
     function handleDeleteGroupSuccess(groupName: string) {
         setGroups(prev => prev.filter(g => g.name !== groupName));
-    }
-
-    function handleDeleteGroupError(error: unknown) {
-        console.error(error);
     }
 
     function deleteGroup(groupName: string) {

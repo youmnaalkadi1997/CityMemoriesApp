@@ -14,6 +14,10 @@ type ProtectedRoutProps = {
     user: string | undefined | null;
 };
 
+function logout() {
+    window.open("/logout", "_self");
+}
+
 export default function CitySearch(props: Readonly<ProtectedRoutProps>) {
     const [query, setQuery] = useState("");
     const [results, setResults] = useState<CityResult[]>([]);
@@ -79,9 +83,7 @@ export default function CitySearch(props: Readonly<ProtectedRoutProps>) {
             });
     }
 
-    function logout() {
-        window.open("/logout", "_self");
-    }
+
 
     useEffect(() => {
         function handleClickOutside(event: MouseEvent) {
@@ -162,7 +164,11 @@ export default function CitySearch(props: Readonly<ProtectedRoutProps>) {
                 {searchHistory.length > 0 && query.length === 0 && (
                     <ul className="search-history">
                         {searchHistory.map((city, index) => (
-                            <li key={index} role="button" onClick={() => handleCitySelect(city)}>
+                            <li key={index} tabIndex={0} onKeyDown={(e) => {
+                                if (e.key === "Enter" || e.key === " ") {
+                                    handleCitySelect(city);
+                                }
+                            }} onClick={() => handleCitySelect(city)}>
                                 {city}
                             </li>
                         ))}
@@ -200,7 +206,12 @@ export default function CitySearch(props: Readonly<ProtectedRoutProps>) {
                             <div
                                 key={city.cityName}
                                 className="popular-city-card"
-                                role="button"
+                                tabIndex={0}
+                                onKeyDown={(e) => {
+                                    if (e.key === "Enter" || e.key === " ") {
+                                        handleCitySelect(city.cityName);
+                                    }
+                                }}
                                 onClick={() => handleCitySelect(city.cityName)}
                             >
                                 <img

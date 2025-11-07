@@ -12,7 +12,7 @@ type NotificationType = {
 };
 
 type Props = {
-    user: string | undefined | null;
+    readonly user: string | undefined | null;
 };
 
 export default function Notifications({ user }: Props) {
