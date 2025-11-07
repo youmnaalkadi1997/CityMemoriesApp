@@ -328,13 +328,23 @@ export default function CitySummary({ cityName, user }: Props) {
                                     )}
 
                                     {c.imageUrl && (
-                                        <img
-                                            role="button"
-                                            src={c.imageUrl}
-                                            alt="Bild zur Stadt"
-                                            style={{ maxWidth: "200px", cursor: "pointer" }}
+                                        <button
+                                            type="button"
                                             onClick={() => window.open(c.imageUrl, "_blank")}
-                                        />
+                                            style={{
+                                                all: "unset",
+                                                cursor: "pointer",
+                                                display: "inline-block",
+                                                padding: 0,
+                                                border: "none",
+                                            }}
+                                        >
+                                            <img
+                                                src={c.imageUrl}
+                                                alt="Bild zur Stadt"
+                                                style={{ maxWidth: "200px", display: "block" }}
+                                            />
+                                        </button>
                                     )}
 
                                     <div className="link-buttons">

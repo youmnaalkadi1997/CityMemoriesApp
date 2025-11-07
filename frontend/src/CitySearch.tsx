@@ -163,13 +163,22 @@ export default function CitySearch(props: Readonly<ProtectedRoutProps>) {
 
                 {searchHistory.length > 0 && query.length === 0 && (
                     <ul className="search-history">
-                        {searchHistory.map((city, index) => (
-                            <li key={index} tabIndex={0} onKeyDown={(e) => {
-                                if (e.key === "Enter" || e.key === " ") {
-                                    handleCitySelect(city);
-                                }
-                            }} onClick={() => handleCitySelect(city)}>
-                                {city}
+                        {searchHistory.map((city) => (
+                            <li key={city}>
+                                <button
+                                    type="button"
+                                    onClick={() => handleCitySelect(city)}
+                                    className="search-history-item"
+                                    style={{
+                                        all: "unset",
+                                        cursor: "pointer",
+                                        display: "block",
+                                        width: "100%",
+                                        textAlign: "left",
+                                    }}
+                                >
+                                    {city}
+                                </button>
                             </li>
                         ))}
                     </ul>

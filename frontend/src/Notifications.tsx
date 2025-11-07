@@ -68,18 +68,19 @@ export default function Notifications({ user }: Props) {
                 </div>
 
                 <div className="notification-list">
-                    {notifications.map(n => (
-                        <div
+                    {notifications.map((n) => (
+                        <button
                             key={n.id}
-                            role="button"
+                            type="button"
                             onClick={() => handleClick(n)}
                             className={`notification-card ${n.read ? "" : "unread"}`}
+
                         >
                             <p className="notification-message">{n.message}</p>
                             <div className="notification-date">
                                 {new Date(n.createdAt).toLocaleString()}
                             </div>
-                        </div>
+                        </button>
                     ))}
                 </div>
             </div>

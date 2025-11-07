@@ -649,6 +649,7 @@ form label {
 
 .notification-card {
     background-color: #fff;
+    color: #1a1a1a;
     padding: 10px 12px;
     border-radius: 8px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.08);
@@ -659,11 +660,13 @@ form label {
 .notification-card.unread {
     border-left: 4px solid #ff4d4f;
     background-color: #fff8f0;
+    color: #1a1a1a;
     font-weight: bold;
 }
 
 .notification-card:hover {
     background-color: #f0f0f0;
+    color: #1a1a1a;
     transform: translateY(-2px);
 }
 

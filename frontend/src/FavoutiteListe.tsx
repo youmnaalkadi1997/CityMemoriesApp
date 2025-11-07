@@ -145,18 +145,19 @@ export default function FavoutiteListe({ user }: Props) {
 
             <h2 className="favorites-title">Meine Favoriten-Städte</h2>
 
-            <div className="favorites-grid">
-                {favorites.map(city => (
-                    <div
-                        key={city}
-                        role="button"
-                        className="favorite-card"
-                        onClick={() => navigate(`/search?selected=${encodeURIComponent(city)}`)}
-                    >
-                        {city}
-                    </div>
-                ))}
-            </div>
+                <div className="favorites-grid">
+                    {favorites.map(city => (
+                        <button
+                            key={city}
+                            type="button"
+                            onClick={() => navigate(`/search?selected=${encodeURIComponent(city)}`)}
+                            className="favorite-card"
+                        >
+                            {city}
+                        </button>
+                    ))}
+                </div>
+
                 <hr className="separator" />
 
             <h2 className="favorites-title">Meine-Gruppen</h2>
