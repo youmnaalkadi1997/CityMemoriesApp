@@ -71,6 +71,7 @@ export default function Notifications({ user }: Props) {
                     {notifications.map(n => (
                         <div
                             key={n.id}
+                            role="button"
                             onClick={() => handleClick(n)}
                             className={`notification-card ${n.read ? "" : "unread"}`}
                         >

@@ -327,6 +327,7 @@ export default function CitySummary({ cityName, user }: Props) {
 
                                     {c.imageUrl && (
                                         <img
+                                            role="button"
                                             src={c.imageUrl}
                                             alt="Bild zur Stadt"
                                             style={{ maxWidth: "200px", cursor: "pointer" }}

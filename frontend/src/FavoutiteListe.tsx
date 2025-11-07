@@ -149,6 +149,7 @@ export default function FavoutiteListe({ user }: Props) {
                 {favorites.map(city => (
                     <div
                         key={city}
+                        role="button"
                         className="favorite-card"
                         onClick={() => navigate(`/search?selected=${encodeURIComponent(city)}`)}
                     >

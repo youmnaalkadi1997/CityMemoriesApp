@@ -162,7 +162,7 @@ export default function CitySearch(props: Readonly<ProtectedRoutProps>) {
                 {searchHistory.length > 0 && query.length === 0 && (
                     <ul className="search-history">
                         {searchHistory.map((city, index) => (
-                            <li key={index} onClick={() => handleCitySelect(city)}>
+                            <li key={index} role="button" onClick={() => handleCitySelect(city)}>
                                 {city}
                             </li>
                         ))}
@@ -200,6 +200,7 @@ export default function CitySearch(props: Readonly<ProtectedRoutProps>) {
                             <div
                                 key={city.cityName}
                                 className="popular-city-card"
+                                role="button"
                                 onClick={() => handleCitySelect(city.cityName)}
                             >
                                 <img
