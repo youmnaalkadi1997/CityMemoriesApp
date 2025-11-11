@@ -2,6 +2,11 @@ import {type ChangeEvent, useEffect, useState} from "react";
 import axios from "axios";
 import {Link, useLocation, useNavigate} from "react-router-dom";
 import { FaHeart, FaRegHeart } from "react-icons/fa";
+import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import "leaflet/dist/leaflet.css";
+import L from "leaflet";
+import markerIconPng from "leaflet/dist/images/marker-icon.png";
+import { useSearchParams } from "react-router-dom";
 
 type WikiData = {
     title: string;
@@ -58,8 +63,18 @@ export default function CitySummary({ cityName, user }: Props) {
     const [replyTexts, setReplyTexts] = useState<{ [key: string]: string }>({});
     const location = useLocation();
     const [fileName, setFileName] = useState<string>("");
+    const [searchParams] = useSearchParams();
+    const lat = searchParams.get("lat");
+    const lon = searchParams.get("lon");
 
+    const position: [number, number] | undefined =
+        lat && lon ? [parseFloat(lat), parseFloat(lon)] : undefined;
 
+    const customIcon = L.icon({
+        iconUrl: markerIconPng,
+        iconSize: [25, 41],
+        iconAnchor: [12, 41]
+    });
 
 
     useEffect(() => {
@@ -276,6 +291,19 @@ export default function CitySummary({ cityName, user }: Props) {
                         Wikipedia – {data.title}
                     </a>
                 </p>
+            )}
+            {position && (
+                <MapContainer center={position} zoom={13} style={{ height: "400px", width: "100%" }}>
+                    <TileLayer
+                        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                    />
+                    <Marker position={position} icon={customIcon}>
+                        <Popup>
+                            {cityName}
+                        </Popup>
+                    </Marker>
+                </MapContainer>
             )}
 
             <form className="form" onSubmit={addComment}>

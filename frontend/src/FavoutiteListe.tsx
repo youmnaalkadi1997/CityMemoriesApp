@@ -26,18 +26,25 @@ export default function FavoutiteListe({ user }: Props) {
     const [selectedGroup, setSelectedGroup] = useState<FavoriteGroup | null>(null);
     const [selectedCities, setSelectedCities] = useState<string[]>([]);
     const navigate = useNavigate();
+    const [unreadCount, setUnreadCount] = useState<number>(0);
+    const username = user;
 
     useEffect(() => {
-        if (!user) return;
+        if (!username) return;
 
-        axios.get("/api/favorites", { params: { username: user } })
+        axios.get("/api/favorites", { params: { username: username } })
             .then(res => setFavorites(res.data))
             .catch(err => console.error(err));
 
-        axios.get("/api/groups", { params: { username: user } })
+        axios.get("/api/groups", { params: { username: username } })
             .then(res => setGroups(res.data))
             .catch(err => console.error(err));
-    }, [user]);
+
+        axios.get("/api/notifications/count", { params: { username } })
+            .then(res => setUnreadCount(res.data))
+            .catch(console.error);
+
+    }, [username]);
 
     function createGroup() {
         if (!user || newGroupName.trim() === "") return;
@@ -117,7 +124,7 @@ export default function FavoutiteListe({ user }: Props) {
             <div className="sidebar">
                 <Link to={"/search"}>Suchen</Link>
                 <Link to="/favorites">Favoritenliste</Link>
-                <Link to= "/notifications">Notifications</Link>
+                <Link to= "/notifications" className="notification-link">Notifications {unreadCount > 0 && <span className="badgee">{unreadCount}</span>}</Link>
                 <Link to="#" onClick={() => window.open('/logout', '_self')}>Logout</Link>
             </div>
             <div className="content">

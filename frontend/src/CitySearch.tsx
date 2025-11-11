@@ -30,6 +30,8 @@ export default function CitySearch(props: Readonly<ProtectedRoutProps>) {
     >([]);
     const location = useLocation();
     const [searchHistory, setSearchHistory] = useState<string[]>([]);
+    const [unreadCount, setUnreadCount] = useState<number>(0);
+    const username = props.user;
 
     function getSearchHistory() {
         if (!props.user) return;
@@ -45,17 +47,17 @@ export default function CitySearch(props: Readonly<ProtectedRoutProps>) {
             .post(`/api/searchHistory/${props.user}`, cityName, {
                 headers: { "Content-Type": "text/plain" },
             })
-            .then((res) => setSearchHistory(res.data))
+            .then(() => setSearchHistory([]))
             .catch((err) => console.error("Fehler beim Hinzufügen zur Suchhistorie:", err));
     }
 
-    function handleCitySelect(cityName: string) {
+    function handleCitySelect(cityName: string, lat?: string, lon?: string) {
         addToHistory(cityName);
+        setSearchHistory([]);
         setQuery("");
         setResults([]);
-        setSearchHistory([]);
         setPopularCities([]);
-        navigate(`/search?selected=${encodeURIComponent(cityName)}`);
+        navigate(`/search?selected=${encodeURIComponent(cityName)}${lat && lon ? `&lat=${lat}&lon=${lon}` : ""}`);
     }
 
     function fetchCities(cityName: string) {
@@ -81,6 +83,23 @@ export default function CitySearch(props: Readonly<ProtectedRoutProps>) {
             .finally(() => {
                 setIsLoading(false);
             });
+    }
+
+    function handleCitySelectWithCoords(city: string) {
+        axios
+            .get("https://nominatim.openstreetmap.org/search", {
+                params: { q: city, format: "json", limit: 1 },
+                headers: { "User-Agent": "CityMemoriesApp/1.0" },
+            })
+            .then((res) => {
+                const result = res.data[0];
+                if (result) {
+                    handleCitySelect(city, result.lat, result.lon);
+                } else {
+                    handleCitySelect(city);
+                }
+            })
+            .catch(() => handleCitySelect(city));
     }
 
 
@@ -130,6 +149,13 @@ export default function CitySearch(props: Readonly<ProtectedRoutProps>) {
         }
     }, [searchParams]);
 
+    useEffect(() => {
+        if (!username) return;
+        axios.get("/api/notifications/count", { params: { username } })
+            .then(res => setUnreadCount(res.data))
+            .catch(console.error);
+    }, [username]);
+
     return (
         <div className="container city-search">
             <div className="sidebar">
@@ -145,7 +171,7 @@ export default function CitySearch(props: Readonly<ProtectedRoutProps>) {
                     Suchen
                 </Link>
                 <Link to="/favorites">Favoritenliste</Link>
-                <Link to= "/notifications">Notifications</Link>
+                <Link to= "/notifications" className="notification-link">Notifications {unreadCount > 0 && <span className="badgee">{unreadCount}</span>}</Link>
                 <Link to="#" onClick={logout}>
                     Logout
                 </Link>
@@ -167,7 +193,7 @@ export default function CitySearch(props: Readonly<ProtectedRoutProps>) {
                             <li key={city}>
                                 <button
                                     type="button"
-                                    onClick={() => handleCitySelect(city)}
+                                    onClick={() => handleCitySelectWithCoords(city)}
                                     className="search-history-item"
                                     style={{
                                         all: "unset",
@@ -191,8 +217,7 @@ export default function CitySearch(props: Readonly<ProtectedRoutProps>) {
                                 <button
                                     className="city-list-item"
                                     onClick={() => {
-                                        const cityNameOnly = city.display_name.split(",")[0];
-                                        handleCitySelect(cityNameOnly);
+                                        handleCitySelect(city.display_name.split(",")[0], city.lat, city.lon);
                                     }}
                                 >
                                     {city.display_name}
@@ -218,10 +243,10 @@ export default function CitySearch(props: Readonly<ProtectedRoutProps>) {
                                 tabIndex={0}
                                 onKeyDown={(e) => {
                                     if (e.key === "Enter" || e.key === " ") {
-                                        handleCitySelect(city.cityName);
+                                        handleCitySelectWithCoords(city.cityName);
                                     }
                                 }}
-                                onClick={() => handleCitySelect(city.cityName)}
+                                onClick={() => handleCitySelectWithCoords(city.cityName)}
                             >
                                 <img
                                     src={
