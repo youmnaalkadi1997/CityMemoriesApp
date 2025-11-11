@@ -8,13 +8,14 @@ Die App nutzt Echtzeit-Benachrichtigungen und externe APIs für Stadtinformation
 - Städte weltweit suchen und Informationen abrufen (mit externen APIs)
 - Stadtbeschreibungen mit Bildern und Karten
 - Kommentare hinzufügen, bearbeiten und löschen
-- Kommentare mit Bildern versehen
+- Kommentare mit Bildern versehen (Bilder werden über Cloudinary gespeichert)
 - Likes und Antworten auf Kommentare
 - Echtzeit-Benachrichtigungen bei Likes/Antworten (WebSocket)
 - Beliebte Städte nach Likes sortiert
 - Favoritenliste mit Gruppen für die Organisation
 - Login/Logout via GitHub OAuth2
 - CI/CD Pipeline für automatisches Deployment
+- Unit und Integration Tests zur Sicherstellung der Funktionalität
 
 ## Technologien
 - Backend: Java, Spring Boot
@@ -22,6 +23,7 @@ Die App nutzt Echtzeit-Benachrichtigungen und externe APIs für Stadtinformation
 - Authentifizierung: OAuth2 mit GitHub
 - Datenbank: MongoDB
 - Echtzeit: WebSockets
+- Cloud Speicherung von Bildern: Cloudinary
 - Deployment: Render
 - CI/CD: GitHub Actions
 - Codequalität: SonarCloud
